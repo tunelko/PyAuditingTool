@@ -2,10 +2,22 @@ PyAuditingTool
 ==============
 PyAuditingTool: A tool to test GNU/Linux security and configuration
 
+For now, it checks: 
+
+- Global system info
+- Enumerating users with login access & group id 0
+- Enumerating system users and password policy 
+- Listing stat on binary files defined via config.cfg (uid,gid,owner,groupowner checks)
+- Check users in /etc/sudoers
+- Check SSH configuration 
+- Check Apache2 configuration
+- Check Integrity on binary files defined via config.cfg 
+
 
 Not finished yet ! Not fully completed.
-
 Come back later ... ;)
+
+
 
 Wiki
 ==============
