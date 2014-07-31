@@ -107,11 +107,11 @@ class PyAuditingTool(object):
 		
 	# get uname() 
     def get_platform(self):
-		return platform.uname() # returns (system, node, release, version, machine, processor)
+		return platform.uname() 
 
 	# get distribution 
     def get_dist(self):
-		return platform.dist() # returns (system, node, release, version, machine, processor)
+		return platform.dist() 
 
 	# Call user/groups enum, several users checks  
     def get_enum_usergroups(self):
@@ -363,7 +363,7 @@ print colored('[TASK] '+ obj.current_time() + ' Enumerating users with login acc
 obj.separator()
 print obj.get_enum_usergroups()
 
-# task: SUDOERS
+# task: sudoers check 
 sudoers = obj.cfg.get_sudoers_path()
 obj.separator()
 print colored('[TASK] '+ obj.current_time() + ' Getting users in ' + sudoers ,obj.cinfo, attrs=['bold'])
@@ -390,12 +390,13 @@ print colored('[TASK] '+ obj.current_time() + ' Checking Apache2 configuration '
 obj.separator()
 obj.check_apache2(apache2_path)
 
-# task: integrity of binaries defined in config 
+# task: check stat of files (sid,gid,owner,groupowner) defined in config.cfg  
 stat_paths = obj.cfg.get_stat_paths().split(':')
 for path in stat_paths: 	
 	obj.separator()
-	print colored('[TASK] '+ obj.current_time() + ' Making stat on files (sid,gid,owner,groupowner) ' + path ,obj.cinfo, attrs=['bold'])
+	print colored('[TASK] '+ obj.current_time() + ' Making stat on files (sid,gid,owner,groupowner) ' + path ,obj.cdefault, attrs=['bold'])
 	print obj.get_stat_files(path)	
+	print colored('[INFO] '+ obj.current_time() + ' Remember to check manually on the report ', obj.cwarning, attrs=['bold'])
 
 
 
