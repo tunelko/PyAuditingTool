@@ -14,6 +14,7 @@ For now, it checks:
 - Check Integrity on binary files defined via config.cfg (two modes: 'since run' or md5sum on packages)
 
 
+** I have start to develop this tool on July 29, 2014
 Not finished yet ! Not fully completed.
 Come back later ... ;)
 
