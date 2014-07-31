@@ -7,7 +7,7 @@ Not finished yet ! Not fully completed.
 
 Come back later ... ;)
 
-PyAuditingTool Wiki
+Wiki
 ==============
 
 https://github.com/tunelko/PyAuditingTool/wiki
