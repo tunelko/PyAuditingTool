@@ -118,10 +118,10 @@ class PyAuditingTool(object):
 		users_login_access=[]
 		users_grp0=[]
 
-		# os.system('cat /etc/passwd > /tmp/tmp_users.txt')
-		with open('/etc/passwd','r') as tmp:
+		os.system('cat /etc/passwd > /tmp/tmp_users.txt')
+		with open('/tmp/tmp_users.txt','r') as tmp:
 			for entry in tmp:
-				print entry
+				#print entry
 				lines = entry.split(':')
 				username=lines[0]
 				uid = lines[3]
