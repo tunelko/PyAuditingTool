@@ -16,6 +16,7 @@ from termcolor import colored
 import logging as log
 import argparse
 import timeit
+import commands
 from libs.config_manager import config_manager
 
 class PyAuditingTool(object): 
@@ -105,6 +106,7 @@ class PyAuditingTool(object):
 	# Dummy separator 
     def separator(self,attrs=''): 
 		print colored('='*99, self.cinfo,attrs='') 
+		return ''
 		
 	# get uname() 
     def get_platform(self):
@@ -129,7 +131,8 @@ class PyAuditingTool(object):
 				gid = lines[4]
 				#print 'Effective User ID is', pwd.getpwuid(int(uid))[0]
 				shell = re.sub('\n','',lines[6])
-				group = grp.getgrgid(uid)[0] 
+				group = grp.getgrgid(uid)[0]
+				os.system('grep -e "^'+username+'" /etc/passwd | awk -F: {\'print $6\'}>>tmp_cmds.txt')
 
 				# list system users with login access 
 				if shell != '/bin/false' and  shell != '/usr/sbin/nologin':
@@ -150,7 +153,19 @@ class PyAuditingTool(object):
 				if uid == False and gid == False:
 					print colored('[INFO] Warning! Owner and group not found for: '+username +'('+group+')', self.cwarning,attrs=['bold'])	
 
+				
+			#last 10 cmds per user 
+			with open('tmp_cmds.txt','r') as tmp:
+				for entry in tmp:
+					history = re.sub('\n','',entry+'/.bash_history')
+					if os.path.isfile(history): 
+						print self.separator()
+						print colored('[INFO] Last commands for user '+entry, self.cinfo,attrs=['bold'])
+						print self.separator()
+						os.system('head -n20 '+history+'|cat -n')
+
 			# print 'resume:' , users_login_access
+			os.remove('tmp_cmds.txt')
 			return ''
 
 	# Password policiy checks 
@@ -243,7 +258,17 @@ class PyAuditingTool(object):
     	sshd_variables=[]    	
     	sshd_variables_ok=[]
     	sshd_variables_nok=[]
-	
+
+    	status, sshv =  commands.getstatusoutput("dpkg -s openssl | grep Version:.*$")
+    	status, heartbleed_vuln =  commands.getstatusoutput("dpkg -s openssl | grep -Ei '\b(Version: (1)\W+)\b'")
+
+    	if heartbleed_vuln != '': 			
+			print colored('[INFO] OpenSSL version (vulnerable):' + sshv, self.cwarning, attrs=['bold'])
+			self.separator()
+    	else:
+			print colored('[INFO] OpenSSL version (not vulnerable):' + sshv, self.cok,attrs=['bold'])
+			self.separator()
+
 	try:
 		with open(file, 'r') as f:
 			for line in f:
@@ -266,8 +291,9 @@ class PyAuditingTool(object):
 			if re.sub(r'#.*$','',val):
 				print colored('[WARN] Value not match, commented or not include in filters: ' + val,self.cwarning,attrs=['bold'])
 
+	
 	except IOError:
-		print colored('[ERROR] File not found, check config value: ssh2_path=' + file, self.cwarning,attrs=['bold'] )
+		print colored('[ERROR] File not found, check config value: ssh2_path = ' + file, self.cwarning,attrs=['bold'] )
 		return ''
 
 	# Check Apache2 config (via config values)
