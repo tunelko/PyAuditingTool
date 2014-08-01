@@ -6,11 +6,8 @@ Created on June 30, 2014
 
 import os, re 
 import spwd, pwd, grp 
-import platform
 from datetime import datetime
 from termcolor import colored
-import argparse
-import timeit
 import commands
 
 class users_module(object):
