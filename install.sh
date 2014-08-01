@@ -27,4 +27,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 sh "$DIR/python-depends.sh"
 
 echo ""
-echo "[*] Setup Completed."
+echo "[INFO] Congratulations! Setup is completed."
