@@ -11,7 +11,7 @@ For now, it checks:
 - Check users in /etc/sudoers
 - Check SSH configuration 
 - Check OpenSSL version for heartbleed vulnerability
-- Check Apache2 configuration
+- Check Apache2 configuration (several config parameters)
 - Check Integrity on binary files defined via config.cfg (two modes: 'since run' or md5sum on packages)
 
 
