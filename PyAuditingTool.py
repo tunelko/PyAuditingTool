@@ -9,14 +9,13 @@ __author__ = "@tunelko"
 __version__ = 'PyAuditingTool v0.2'
 
 import os, re 
-import spwd, pwd, grp 
 import platform
 from datetime import datetime
 from termcolor import colored
-import logging as log
 import argparse
 import timeit
 import commands
+from modules.users_module import users_module
 from libs.config_manager import config_manager
 
 class PyAuditingTool(object): 
@@ -66,6 +65,27 @@ class PyAuditingTool(object):
 				print colored("Unknown format, need a valid format --h for help\n", self.cwarning,  attrs=['bold'])
 				exit(0)
 
+		# Call to run a check 
+		def run_only(format):
+			#global_info, users, sshd, apache2, stat, integrity
+
+			if format[0] == 'global_info':
+				print format[0]
+			elif format[0] == 'users':
+				self.check_user_only()
+				exit(0)
+			elif format[0] == 'sshd':
+				print format[0]
+			elif format[0] == 'apache2':
+				print format[0]
+			elif format[0] == 'stat':
+				print format[0]
+			elif format[0] == 'integrity':
+				print format[0]
+			else:
+				print colored("Unknown format, need a valid format --h for help\n", self.cwarning,  attrs=['bold'])
+				exit(0)
+
 		
 
 		# Parse arguments and call actions
@@ -82,6 +102,10 @@ class PyAuditingTool(object):
 			# Specify report's format
 			if args.set_format is not None:
 			    set_format(args.set_format)
+
+			# Specify only to run a check
+			if args.run_only is not None:
+			    run_only(args.run_only)
 			    
 			# Get updates from URL 
 			if args.get_updates:
@@ -94,6 +118,7 @@ class PyAuditingTool(object):
 		    parser.add_argument("-c", "--create-report", action='store_true', dest='create_report', help="create report (default HTML format)")
 		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")
 		    parser.add_argument("-t", "--tests", action='store_true', dest='run_tests',help="run tests (default config)")
+		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check, not all: global_info, users, sshd, apache2, stat, integrity")
 		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
 		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
 		    main(parser.parse_args())
@@ -208,6 +233,19 @@ class PyAuditingTool(object):
     	return ''
 
 		# os.system('cat tmp_md5' + re.sub('/','_',path) + '.txt')
+
+	# Check Sudoers config (via config values)
+    def get_sudoers(self, file):    
+	try: 
+		with open(file, 'r') as f:
+				for line in f:
+					line = re.sub('\n','',line)
+					if re.sub(r'#.*$','',line):						
+						print colored(line,self.cinfo,attrs=['bold'])
+
+	except IOError:
+		print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
+	return ''
 
 
 	# Compare md5 checksums on two lists of md5 (old,new)
@@ -334,19 +372,6 @@ class PyAuditingTool(object):
 		return ''
 
 
-	# Check Sudoers config (via config values)
-    def get_sudoers(self, file):    
-	try: 
-		with open(file, 'r') as f:
-				for line in f:
-					line = re.sub('\n','',line)
-					if re.sub(r'#.*$','',line):						
-						print colored(line,self.cinfo,attrs=['bold'])
-
-	except IOError:
-		print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
-	return ''
-
 	# Check stat on binaries (via config)
     def get_stat_files(self, path): 
 	print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do stat -c "UID: %u (%U)- GID: %g (%G) %n" '+path+'/$file; done > tmp_stat.txt', self.cok, attrs=['dark'])
@@ -360,6 +385,20 @@ class PyAuditingTool(object):
 	except IOError:
 		print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
 	return ''
+
+    def check_user_only(self):
+		users = users_module('users')
+		sudoers = self.cfg.get_sudoers_path()
+		print users.separator()
+		print colored('[TASK] '+ self.current_time() + ' Enumerating users with login access & group id 0',self.cinfo, attrs=['bold'])
+		print users.get_enum_usergroups()				
+		print users.separator()		
+		print colored('[TASK] '+ self.current_time() + ' Enumerating system users and password policy ',self.cinfo, attrs=['bold'])
+		print users.get_policy_usergroups()		
+		print colored('[TASK] '+ self.current_time() + ' Getting users in ' + sudoers ,self.cinfo, attrs=['bold'])
+		print users.separator()
+		print users.get_sudoers(sudoers)
+		print colored('[INFO] '+ self.current_time() + ' Check if the users above are right to be in ' + sudoers ,self.cwarning, attrs=['bold'])
 
 	# Save data for reports 
     def save_data(self, report, data): 
@@ -383,24 +422,7 @@ obj.separator()
 print colored(obj.get_platform(), obj.cinfo) 
 print colored(obj.get_dist(), obj.cinfo)
 
-# task: enumerating system users with login access, checks for users with group 0
-obj.separator()
-print colored('[TASK] '+ obj.current_time() + ' Enumerating users with login access & group id 0',obj.cinfo, attrs=['bold'])
-obj.separator()
-print obj.get_enum_usergroups()
-
-# task: sudoers check 
-sudoers = obj.cfg.get_sudoers_path()
-obj.separator()
-print colored('[TASK] '+ obj.current_time() + ' Getting users in ' + sudoers ,obj.cinfo, attrs=['bold'])
-obj.separator()
-print obj.get_sudoers(sudoers)
-print colored('[INFO] '+ obj.current_time() + ' Check if the users above are right to be in ' + sudoers ,obj.cwarning, attrs=['bold'])
-
-# task: check password policy on system users 
-obj.separator()
-print colored('[TASK] '+ obj.current_time() + ' Enumerating system users and password policy ',obj.cinfo, attrs=['bold'])
-print obj.get_policy_usergroups()
+obj.check_user_only()
 
 # task: Check sshd confguration 
 sshd_path = obj.cfg.get_sshd_path()
