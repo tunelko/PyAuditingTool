@@ -15,6 +15,7 @@ from datetime import datetime
 from termcolor import colored
 import logging as log
 import argparse
+import timeit
 from libs.config_manager import config_manager
 
 class PyAuditingTool(object): 
@@ -125,7 +126,6 @@ class PyAuditingTool(object):
 				lines = entry.split(':')
 				username=lines[0]
 				uid = lines[3]
-				print uid
 				gid = lines[4]
 				#print 'Effective User ID is', pwd.getpwuid(int(uid))[0]
 				shell = re.sub('\n','',lines[6])
@@ -221,7 +221,7 @@ class PyAuditingTool(object):
 						hash2 =  line2.split('*')
 						filename2 = re.sub('\n','',hash2[1])
 
-						if hash1[0] == hash2[0]:
+						if hash1[0] == hash2[0] and filename1 == filename2:
 							data = '[OK] Hash OK '+hash1[0] +  '| File: ' + filename1 
 							self.save_data(self. report_name, data)
 							print colored(data, self.cok , attrs=['bold'])							
@@ -345,7 +345,7 @@ class PyAuditingTool(object):
 
 # Init object and start. 
 obj = PyAuditingTool()
-
+start = timeit.default_timer()
 print colored(obj.banner, obj.cok) 
 print '[INIT]' , obj.current_time() , '[*] Report file: ', obj.report_name
 
@@ -415,4 +415,8 @@ for path in integrity_paths:
 	print colored('[TASK] '+ obj.current_time() + ' Verifying integrity on ' + path, obj.cinfo, attrs=['bold'])	
 	obj.compare_checksums(obj.data_path + 'tmp_md5'+tmppart+'.txt', obj.data_path + 'tmp_md5_compare'+tmppart+'.txt')
 	
+obj.separator()	
+stop = timeit.default_timer()
+total_time = start - stop
+print colored('[INFO] '+ obj.current_time() + ' All running checks take ' +  str(start - stop) + ' seconds to complete ', obj.cinfo, attrs=['bold'])	
 obj.separator()	
