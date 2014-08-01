@@ -16,5 +16,4 @@
 
 pip install argparse
 pip install termcolor
-pip install loggin
 pip install datetime
