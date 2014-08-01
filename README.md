@@ -20,15 +20,15 @@ Not finished yet ! Not fully completed.
 Come back later ... ;)
 
 
-Mini howto 
+Mini howto
 ==============
 
 1. First, run [install.sh](https://github.com/tunelko/PyAuditingTool/blob/master/install.sh) to meet dependencies. 
 2. In the first run, the tool collects some information for integrity checks, asking you to re-run it (it's normal)
 
-Report formats
+Reports
 ==============
-You can create reports in several common formats: HTML, XML, CSV, TXT with --format [FORMAT] option. Reports will be stored on reports folder. 
+You can create reports in several common formats: HTML, XML, CSV, TXT with --format [FORMAT] option. Reports will be stored on reports folder. HTML is the default one. 
 
 
 Wiki
