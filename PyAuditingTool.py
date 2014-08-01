@@ -439,7 +439,9 @@ for path in integrity_paths:
 	tmppart = re.sub('/','_',path)
 	obj.separator()	
 	print colored('[TASK] '+ obj.current_time() + ' Verifying integrity on ' + path, obj.cinfo, attrs=['bold'])	
+	obj.separator()	
 	obj.compare_checksums(obj.data_path + 'tmp_md5'+tmppart+'.txt', obj.data_path + 'tmp_md5_compare'+tmppart+'.txt')
+
 	
 obj.separator()	
 stop = timeit.default_timer()
