@@ -417,6 +417,6 @@ for path in integrity_paths:
 	
 obj.separator()	
 stop = timeit.default_timer()
-total_time = start - stop
-print colored('[INFO] '+ obj.current_time() + ' All running checks take ' +  str(start - stop) + ' seconds to complete ', obj.cinfo, attrs=['bold'])	
+total_time = stop - start
+print colored('[INFO] '+ obj.current_time() + ' All running checks take ' +  str(total_time) + ' seconds to complete ', obj.cinfo, attrs=['bold'])	
 obj.separator()	
