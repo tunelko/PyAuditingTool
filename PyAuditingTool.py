@@ -18,6 +18,7 @@ from modules.users_module import users_module
 from modules.services_module import services_module
 from modules.integrity_module import integrity_module
 from modules.platform_module import platform_module
+from modules.update_module import update_module
 from libs.config_manager import config_manager
 
 class PyAuditingTool(object): 
@@ -135,7 +136,7 @@ class PyAuditingTool(object):
 			    
 			# Get updates from URL 
 			if args.get_updates:
-			    self.get_updates()
+			    update()
 			    exit(0)
 
 		### Main
@@ -147,7 +148,7 @@ class PyAuditingTool(object):
 		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: global_info, users, services, integrity")
 		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
 		    parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
-		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the lastest version of PyAuditingTool")
+		    parser.add_argument("-u", "--update", action='store_true', dest='update', help="Update to the lastest version of PyAuditingTool")
 		    main(parser.parse_args())
 
 	# Check requirements before run 
