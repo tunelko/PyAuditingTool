@@ -41,8 +41,13 @@ class platform_module(object):
 		
 	# get uname() 
 		def get_platform(self):
-			return platform.uname() 
+			return colored('[INFO] Platform: ' + platform.platform(), self.cinfo, attrs=['bold'])
 
 	# get distribution 
 		def get_dist(self):
-			return platform.dist() 
+			return colored('[INFO] Distribution: ' + ' '.join((platform.linux_distribution())), self.cinfo, attrs=['bold']) 
+
+	# get arquitecture
+		def get_arquitecture(self):
+			return colored('[INFO] Machine: ' + ''.join((platform.machine())), self.cinfo, attrs=['bold']) 
+			

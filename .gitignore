@@ -1,0 +1,13 @@
+## Compiled source #
+###################
+*.pyc
+
+# txt files reports #
+###################
+*.txt
+
+# Images #
+###################
+*.jpg
+*.png
+
