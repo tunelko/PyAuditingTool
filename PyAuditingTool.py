@@ -135,7 +135,8 @@ class PyAuditingTool(object):
 			    
 			# Get updates from URL 
 			if args.get_updates:
-			    get_updates()
+			    self.get_updates()
+			    exit(0)
 
 		### Main
 		if __name__ == '__main__':
@@ -242,6 +243,9 @@ class PyAuditingTool(object):
 
 			return ''
 
+
+    def get_updates(self): 
+			return os.system('git pull')
 
 	# Save data for reports 
     def save_data(self, report, data):

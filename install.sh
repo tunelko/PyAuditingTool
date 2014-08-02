@@ -20,7 +20,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 echo "[*] Installing pip/gcc ..."
-apt-get install python-pip python-dev build-essential
+apt-get install python-pip python-dev build-essential git-core
 
 echo "[*] Installing python libs ..."
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
