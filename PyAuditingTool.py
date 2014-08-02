@@ -135,8 +135,8 @@ class PyAuditingTool(object):
 			    
 			# Get updates from URL 
 			if args.update:
-			    update = update_module.update(os.path.abspath("."))
-			    update.update('.')
+			    update = update_module.update('update')
+			    update.update(os.path.abspath("."))
 			    exit(0)
 
 		### Main

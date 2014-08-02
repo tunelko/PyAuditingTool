@@ -46,6 +46,6 @@ class update_module(object):
 
 		def update(self):
 			try:
-				git.cmd.Git(self.work_directory).pull()
+				git.cmd.Git(self.update_path).pull()
 			except git.GitCommandError, e:
 				print e
