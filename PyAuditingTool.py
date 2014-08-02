@@ -135,7 +135,7 @@ class PyAuditingTool(object):
 			    exit(0)
 			    
 			# Get updates from URL 
-			if args.get_updates:
+			if args.update:
 			    update()
 			    exit(0)
 
