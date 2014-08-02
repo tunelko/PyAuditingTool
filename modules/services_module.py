@@ -41,7 +41,7 @@ class services_module(object):
 
 
 	# Check SSH config (via config values)
-	def check_sshd(self, filepath, params=[] ):
+	def check_sshd(self, filepath, params = []):
 
 		try:
 			sshd_variables=[]       
@@ -84,7 +84,7 @@ class services_module(object):
 				return ''
 		
 	# Check Apache2 config (via config values)
-	def check_apache2(self, filepath, params ):
+	def check_apache2(self, filepath, params = []):
 		try:
 			apache2_variables=[]
 			apache2_variables_ok=[]
