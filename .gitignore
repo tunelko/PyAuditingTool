@@ -1,6 +1,10 @@
-# Compiled source #
+## Compiled source #
 ###################
 *.pyc
+
+# txt files reports #
+###################
+*.txt
 
 # Images #
 ###################
