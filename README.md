@@ -23,6 +23,24 @@ Come back later ... ;)
 Usage
 ==============
 
+    $ ./PyAuditingTool.py -h 
+    usage: PyAuditingTool.py [-h] [-v] [-c] [-f SET_FORMAT [SET_FORMAT ...]]
+                           [-ro RUN_ONLY [RUN_ONLY ...]] [-ca] [-ff] [-u]
+    
+    PyAuditingTool: A tool to test GNU/Linux security and configuration !
+    
+    optional arguments:
+    -h, --help            show this help message and exit
+    -v, --version         show version
+    -c, --create-report   create report (default HTML format)
+    -f SET_FORMAT [SET_FORMAT ...], --format SET_FORMAT [SET_FORMAT ...]
+                          Available report formats: HTML(default), CSV, XML, TXT
+    -ro RUN_ONLY [RUN_ONLY ...], --run-only RUN_ONLY [RUN_ONLY ...]
+                          Run only a check: global_info, users, services,
+                          integrity
+    -ca, --cache          Do not start over again, get cached data
+    -ff, --flush          Delete any previous data
+    -u, --update          Update to the last version of PyAuditingTool
 
 Mini howto
 ==============
