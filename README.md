@@ -5,7 +5,7 @@ PyAuditingTool: A tool to test GNU/Linux security and its misconfiguration
 For now, it checks: 
 
 - Global system info (platform, arquitecture, alias, ...)
-- Check login access & group id 0
+- Check users with login access & group id 0
 - Check password policy age 
 - Check last 20 commands of each user 
 - Check uid,gid,owner,groupowner on binary files defined via config.cfg
