@@ -14,8 +14,10 @@ from datetime import datetime
 from termcolor import colored
 import argparse
 import timeit
-import commands
+
 from modules.users_module import users_module
+from modules.services_module import services_module
+from modules.platform_module import platform_module
 from libs.config_manager import config_manager
 
 class PyAuditingTool(object): 
@@ -67,19 +69,20 @@ class PyAuditingTool(object):
 
 		# Call to run a check 
 		def run_only(format):
-			#global_info, users, sshd, apache2, stat, integrity
-
+			#global_info, users, services, stat, integrity
 			if format[0] == 'global_info':
-				print format[0]
-			elif format[0] == 'users':
-				self.check_user_only()
+				self.global_info()
 				exit(0)
-			elif format[0] == 'sshd':
-				print format[0]
-			elif format[0] == 'apache2':
-				print format[0]
-			elif format[0] == 'stat':
-				print format[0]
+
+			elif format[0] == 'users':
+				# call to check_users part
+				self.check_users()
+				exit(0)
+				
+			elif format[0] == 'services':
+				self.check_services()
+				exit(0)
+				
 			elif format[0] == 'integrity':
 				print format[0]
 			else:
@@ -91,10 +94,6 @@ class PyAuditingTool(object):
 		# Parse arguments and call actions
 		def main(args):
 			''' Call functions in the correct order based on CLI params '''
-			# Run unit tests
-			if args.run_tests:
-			    tests()
-
 			# Create report 
 			if args.create_report:
 			    create_report()
@@ -116,9 +115,8 @@ class PyAuditingTool(object):
 		    parser = argparse.ArgumentParser(description='PyAuditingTool: A tool to test GNU/Linux security and configuration !')
 		    parser.add_argument("-v", "--version", action='version', help="show version", version=__version__ +' by ' + __author__)
 		    parser.add_argument("-c", "--create-report", action='store_true', dest='create_report', help="create report (default HTML format)")
-		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")
-		    parser.add_argument("-t", "--tests", action='store_true', dest='run_tests',help="run tests (default config)")
-		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check, not all: global_info, users, sshd, apache2, stat, integrity")
+		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")		    
+		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: global_info, users, services, integrity")
 		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
 		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
 		    main(parser.parse_args())
@@ -132,91 +130,6 @@ class PyAuditingTool(object):
     def separator(self,attrs=''): 
 		print colored('='*99, self.cinfo,attrs='') 
 		return ''
-		
-	# get uname() 
-    def get_platform(self):
-		return platform.uname() 
-
-	# get distribution 
-    def get_dist(self):
-		return platform.dist() 
-
-	# Call user/groups enum, several users checks  
-    def get_enum_usergroups(self):
-		users_login_access=[]
-		users_grp0=[]
-
-		os.system('cat /etc/passwd > /tmp/tmp_users.txt')
-		with open('/tmp/tmp_users.txt','r') as tmp:
-			for entry in tmp:
-				#print entry
-				lines = entry.split(':')
-				username=lines[0]
-				uid = lines[3]
-				gid = lines[4]
-				#print 'Effective User ID is', pwd.getpwuid(int(uid))[0]
-				shell = re.sub('\n','',lines[6])
-				group = grp.getgrgid(uid)[0]
-				os.system('grep -e "^'+username+'" /etc/passwd | awk -F: {\'print $6\'}>>tmp_cmds.txt')
-
-				# list system users with login access 
-				if shell != '/bin/false' and  shell != '/usr/sbin/nologin':
-					print colored('[INFO] Username with login access: '+username+'('+group+')'+' - please check manually' , self.cwarning,attrs=['bold'])
-					users_login_access.append(username)
-				else: 
-					print colored('[INFO] Username with no shell: '+username +'('+group+')', self.cinfo,attrs=['bold'])
-
-
-				# Check for user group id 0 
-				if uid == '0' and username != 'root': 
-					print colored('[INFO] Warning! Check this username group: '+username +'('+group+')', self.cwarning,attrs=['bold'])	
-					users_grp0.append(username)				
-				else:
-					print colored('[INFO] Testing GROUP ID 0 for user: ' + username +'('+group+') Correct! '  , self.cok,attrs=['bold'])
-					
-				# Check for user group id 0 
-				if uid == False and gid == False:
-					print colored('[INFO] Warning! Owner and group not found for: '+username +'('+group+')', self.cwarning,attrs=['bold'])	
-
-				
-			#last 10 cmds per user 
-			with open('tmp_cmds.txt','r') as tmp:
-				for entry in tmp:
-					history = re.sub('\n','',entry+'/.bash_history')
-					if os.path.isfile(history): 
-						print self.separator()
-						print colored('[INFO] Last commands for user '+entry, self.cinfo,attrs=['bold'])
-						print self.separator()
-						os.system('head -n20 '+history+'|cat -n')
-
-			# print 'resume:' , users_login_access
-			os.remove('tmp_cmds.txt')
-			return ''
-
-	# Password policiy checks 
-    def get_policy_usergroups(self):
-	#initialize lists
-	users = []
-	groups = []
-	#get password & groups 
-	users_db = spwd.getspall() 
-	group_db = grp.getgrall()
-	#print users_db, group_db
-	try:
-	    #check passwd policiy foreach user
-	    for entry in users_db:
-			username = entry[0]
-			self.separator()
-			print colored('[CMD] Executing: chage -l  ' + username , self.calert, attrs=['dark']) 
-			os.system('chage -l  ' + username + '> tmp_password_policy.txt')
-			os.system('cat tmp_password_policy.txt')
-			# self.save_data(self.report_name, os.system('cat tmp_password_policy.txt'))
-			#TO-DO: set recommendations 
-
-
-	except:
-	    print "There was a problem running the script."
-    	return ''	    
 
 	# get md5sum -b of any path as param (only files -d)
     def get_md5sum(self,path=''): 
@@ -233,19 +146,6 @@ class PyAuditingTool(object):
     	return ''
 
 		# os.system('cat tmp_md5' + re.sub('/','_',path) + '.txt')
-
-	# Check Sudoers config (via config values)
-    def get_sudoers(self, file):    
-	try: 
-		with open(file, 'r') as f:
-				for line in f:
-					line = re.sub('\n','',line)
-					if re.sub(r'#.*$','',line):						
-						print colored(line,self.cinfo,attrs=['bold'])
-
-	except IOError:
-		print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
-	return ''
 
 
 	# Compare md5 checksums on two lists of md5 (old,new)
@@ -290,88 +190,6 @@ class PyAuditingTool(object):
 	except IOError, e:		
 		print "Error reading checksums file %s: %s" % (file, e)
 
-	# Check SSH config (via config values)
-    def check_sshd(self, file):
-    	sshd_variables2check = self.cfg.get_sshd_variables2check().split(':')
-    	sshd_variables=[]    	
-    	sshd_variables_ok=[]
-    	sshd_variables_nok=[]
-
-    	status, sshv =  commands.getstatusoutput("dpkg -s openssl | grep Version:.*$")
-    	status, heartbleed_vuln =  commands.getstatusoutput("dpkg -s openssl | grep -Ei '\b(Version: (1)\W+)\b'")
-
-    	if heartbleed_vuln != '': 			
-			print colored('[INFO] OpenSSL version (vulnerable):' + sshv, self.cwarning, attrs=['bold'])
-			self.separator()
-    	else:
-			print colored('[INFO] OpenSSL version (not vulnerable):' + sshv, self.cok,attrs=['bold'])
-			self.separator()
-
-	try:
-		with open(file, 'r') as f:
-			for line in f:
-				params =  line.split(' ')
-				if len(params)==2:
-					key = params[0]
-					value = re.sub('\n','',params[1])
-					sshd_variables.append(key+' ' +value)
-
-		for valc in sshd_variables2check:		
-			for val in sshd_variables:
-				if val in valc:
-					print colored('[INFO] Value OK: ' + val,self.cok,attrs=['bold'])
-					sshd_variables_ok.append(val)
-				else:				
-					sshd_variables_nok.append(val)
-
-		resulting_list = list(set(sshd_variables_nok) - set(sshd_variables_ok))
-		for val in resulting_list:		
-			if re.sub(r'#.*$','',val):
-				print colored('[WARN] Value not match, commented or not include in filters: ' + val,self.cwarning,attrs=['bold'])
-
-	
-	except IOError:
-		print colored('[ERROR] File not found, check config value: ssh2_path = ' + file, self.cwarning,attrs=['bold'] )
-		return ''
-
-	# Check Apache2 config (via config values)
-    def check_apache2(self, file):
-    	apache2_variables2check = self.cfg.get_apache2_variables2check().split(':')
-    	apache2_variables=[]
-    	apache2_variables_ok=[]
-    	apache2_variables_nok=[]
-
-	
-	try:
-		with open(file, 'r') as f:
-				for line in f:
-					params =  line.split(' ')
-					if len(params)==2:
-						key = params[0]
-						value = re.sub('\n','',params[1])
-						apache2_variables.append(key+' ' +value)
-
-		for valc in apache2_variables2check:		
-			for val in apache2_variables:
-				if val in valc:
-					print colored('[INFO] Value OK: ' + val,self.cok,attrs=['bold'])
-					apache2_variables_ok.append(val)
-				else:				
-					apache2_variables_nok.append(val)
-
-		resulting_list = list(set(apache2_variables_nok) - set(apache2_variables_ok))
-
-		for val in resulting_list:		
-			if re.sub(r'#.*$','',val):
-				print colored('[WARN] Value not match, commented or not include in filters: ' + val,self.cwarning,attrs=['bold'])
-		
-
-
-	except IOError:
-		print colored('[ERROR] File not found, check config value: apache2_path=' + file, self.cwarning,attrs=['bold'] )
-		return ''
-
-
 	# Check stat on binaries (via config)
     def get_stat_files(self, path): 
 	print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do stat -c "UID: %u (%U)- GID: %g (%G) %n" '+path+'/$file; done > tmp_stat.txt', self.cok, attrs=['dark'])
@@ -386,9 +204,14 @@ class PyAuditingTool(object):
 		print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
 	return ''
 
-    def check_user_only(self):
+
+
+
+    def check_users(self):
+    	# config & class loading
 		users = users_module('users')
 		sudoers = self.cfg.get_sudoers_path()
+
 		print users.separator()
 		print colored('[TASK] '+ self.current_time() + ' Enumerating users with login access & group id 0',self.cinfo, attrs=['bold'])
 		print users.get_enum_usergroups()				
@@ -399,6 +222,46 @@ class PyAuditingTool(object):
 		print users.separator()
 		print users.get_sudoers(sudoers)
 		print colored('[INFO] '+ self.current_time() + ' Check if the users above are right to be in ' + sudoers ,self.cwarning, attrs=['bold'])
+		return''
+
+
+
+
+
+    def check_services(self):
+    	# config & class loading 
+		services = services_module('services')
+		sshd_path = self.cfg.get_sshd_path()		
+		params = self.cfg.get_sshd_variables2check().split(':')
+
+		# SSH confgurations check 
+		self.separator()
+		print colored('[TASK] '+ self.current_time() + ' Checking SSH configuration '+ sshd_path ,self.cinfo, attrs=['bold'])
+		self.separator()
+		services.check_sshd(sshd_path, params)
+
+		# Apache2 confguration 
+		apache2_path = self.cfg.get_apache2_path()
+		params = self.cfg.get_apache2_variables2check().split(':')
+		self.separator()
+		print colored('[TASK] '+ self.current_time() + ' Checking Apache2 configuration '+ apache2_path ,self.cinfo, attrs=['bold'])
+		self.separator()
+		services.check_apache2(apache2_path, params)
+		print self.separator()
+		return ''
+
+
+    def global_info(self):
+			global_info = platform_module('global_info')
+			self.separator()
+			print colored('[TASK] '+ self.current_time() + ' Global system info',self.cinfo, attrs=['bold'])
+			self.separator()
+			print colored(global_info.get_platform(), self.cinfo) 
+			print colored(global_info.get_dist(), self.cinfo)
+
+
+
+
 
 	# Save data for reports 
     def save_data(self, report, data): 
@@ -415,28 +278,16 @@ print colored(obj.banner, obj.cok)
 print '[INIT]' , obj.current_time() , '[*] Report file: ', obj.report_name
 
 # task: global info: platform , dist 
-obj.separator()
-print colored('[TASK] '+ obj.current_time() + ' Global system info',obj.cinfo, attrs=['bold'])
+obj.global_info()
 
-obj.separator()
-print colored(obj.get_platform(), obj.cinfo) 
-print colored(obj.get_dist(), obj.cinfo)
-
-obj.check_user_only()
+# task: check users part 
+obj.check_users()
 
 # task: Check sshd confguration 
-sshd_path = obj.cfg.get_sshd_path()
-obj.separator()
-print colored('[TASK] '+ obj.current_time() + ' Checking SSH configuration '+ sshd_path ,obj.cinfo, attrs=['bold'])
-obj.separator()
-obj.check_sshd(sshd_path)
+obj.check_services()
 
-# task: Check Apache2 confguration 
-apache2_path = obj.cfg.get_apache2_path()
-obj.separator()
-print colored('[TASK] '+ obj.current_time() + ' Checking Apache2 configuration '+ apache2_path ,obj.cinfo, attrs=['bold'])
-obj.separator()
-obj.check_apache2(apache2_path)
+
+
 
 # task: check stat of files (sid,gid,owner,groupowner) defined in config.cfg  
 stat_paths = obj.cfg.get_stat_paths().split(':')
