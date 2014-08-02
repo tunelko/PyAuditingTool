@@ -9,7 +9,6 @@ __author__ = "@tunelko"
 __version__ = 'PyAuditingTool v0.2'
 
 import os, re 
-import platform
 from datetime import datetime
 from termcolor import colored
 import argparse
@@ -258,6 +257,7 @@ class PyAuditingTool(object):
 			self.separator()
 			print colored(global_info.get_platform(), self.cinfo) 
 			print colored(global_info.get_dist(), self.cinfo)
+			print colored(global_info.get_arquitecture(), self.cinfo)
 
 
 
