@@ -58,5 +58,6 @@ You can create reports in several common formats: HTML, XML, CSV, TXT with --for
 Wiki
 ==============
 
+Please visit wiki section form more detailed information: 
 https://github.com/tunelko/PyAuditingTool/wiki
 
