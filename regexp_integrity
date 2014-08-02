@@ -1,0 +1,1 @@
+ cat /var/lib/dpkg/info/*.md5sums|grep -E "^[0-9a-f]{32}  usr/bin"
