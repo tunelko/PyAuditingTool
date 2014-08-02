@@ -39,7 +39,7 @@ class services_module(object):
 		print colored('='*99, self.cinfo,attrs='') 
 		return ''
 
-
+	# Check heartbleed vulnerability. version checking only. 
 	def check_heartbleed(self):
 			status, sshv =  commands.getstatusoutput("dpkg -s openssl | grep Version:.*$")
 			status, heartbleed_vuln =  commands.getstatusoutput("dpkg -s openssl | grep -Ei '\b(Version: (1)\W+)\b'")
@@ -52,7 +52,7 @@ class services_module(object):
 				self.separator()
 
 
-	# Check SSH config (via config values)
+	# Check any service with delimiter (via config values)
 	def check_services(self, filepath, params = [], delimiter=' '):
 		try:
 			variables=[]       

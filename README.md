@@ -4,15 +4,17 @@ PyAuditingTool: A tool to test GNU/Linux security and its misconfiguration
 
 For now, it checks: 
 
-- Global system info
-- Enumerating users with login access & group id 0
-- Enumerating system users and password policy 
-- Stat on binary files defined via config.cfg (uid,gid,owner,groupowner checks)
+- Global system info (platform, arquitecture, alias, ...)
+- Check users with login access & group id 0
+- Check password policy age 
+- Check last 20 commands of each user 
+- Check uid,gid,owner,groupowner on binary files defined via config.cfg
 - Check users in /etc/sudoers
 - Check SSH configuration 
 - Check OpenSSL version for heartbleed vulnerability
 - Check Apache2 configuration (several config parameters)
-- Check Integrity on binary files defined via config.cfg (two modes: 'since run' or md5sum on packages)
+- Check sysctl.conf 
+- Check Integrity (md5sums) on binary files defined via config.cfg with two modes: 'since run' or md5sum on packages
 
 
 ** I have start to develop this tool on July 29, 2014
@@ -42,7 +44,7 @@ Usage
     -ff, --flush          Delete any previous data
     -u, --update          Update to the lastest version of PyAuditingTool
 
-Mini howto
+Mini how-to
 ==============
 
 1. First, run [install.sh](https://github.com/tunelko/PyAuditingTool/blob/master/install.sh) to meet dependencies. 
@@ -56,5 +58,6 @@ You can create reports in several common formats: HTML, XML, CSV, TXT with --for
 Wiki
 ==============
 
+Please visit wiki section form more detailed information: 
 https://github.com/tunelko/PyAuditingTool/wiki
 
