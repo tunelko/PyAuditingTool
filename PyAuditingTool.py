@@ -136,8 +136,8 @@ class PyAuditingTool(object):
 			    
 			# Get updates from URL 
 			if args.update:
-			    update = update_module.update('update')
-			    update.update(os.path.abspath("."))
+			    get_update = update_module.update()
+			    get_update.update(os.path.abspath("."))
 			    exit(0)
 
 		### Main
@@ -244,10 +244,6 @@ class PyAuditingTool(object):
 				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + 'tmp_md5_compare'+tmppart+'.txt')
 
 			return ''
-
-		# Update via GitHub
-    def get_updates(self): 
-			return os.system('git pull')
 
 	# Save data for reports 
     def save_data(self, report, data):
