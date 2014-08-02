@@ -134,7 +134,8 @@ class PyAuditingTool(object):
 			    
 			# Get updates from URL 
 			if args.get_updates:
-			    get_updates()
+			    self.get_updates()
+			    exit(0)
 
 		### Main
 		if __name__ == '__main__':
@@ -145,7 +146,7 @@ class PyAuditingTool(object):
 		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: global_info, users, services, integrity")
 		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
 		    parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
-		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
+		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the lastest version of PyAuditingTool")
 		    main(parser.parse_args())
 
 	# Check requirements before run 
@@ -241,6 +242,9 @@ class PyAuditingTool(object):
 
 			return ''
 
+		# Update via GitHub
+    def get_updates(self): 
+			return os.system('git pull')
 
 	# Save data for reports 
     def save_data(self, report, data):
