@@ -44,7 +44,7 @@ Usage
     -ff, --flush          Delete any previous data
     -u, --update          Update to the lastest version of PyAuditingTool
 
-Mini howto
+Mini how-to
 ==============
 
 1. First, run [install.sh](https://github.com/tunelko/PyAuditingTool/blob/master/install.sh) to meet dependencies. 
