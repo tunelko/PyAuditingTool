@@ -13,9 +13,9 @@ from datetime import datetime
 from termcolor import colored
 import argparse
 import timeit
-
 from modules.users_module import users_module
 from modules.services_module import services_module
+from modules.integrity_module import integrity_module
 from modules.platform_module import platform_module
 from libs.config_manager import config_manager
 
@@ -70,20 +70,42 @@ class PyAuditingTool(object):
 		def run_only(format):
 			#global_info, users, services, stat, integrity
 			if format[0] == 'global_info':
+				start = timeit.default_timer()
+				self.separator()
 				self.global_info()
+				stop = timeit.default_timer()
+				total_time = stop - start
+				print colored('[INFO] '+ self.current_time() + ' ' + format[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				self.separator()
 				exit(0)
 
 			elif format[0] == 'users':
 				# call to check_users part
+				start = timeit.default_timer()				
 				self.check_users()
+				stop = timeit.default_timer()
+				total_time = stop - start
+				print colored('[INFO] '+ self.current_time() + ' ' + format[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				self.separator()
 				exit(0)
 				
 			elif format[0] == 'services':
+				start = timeit.default_timer()				
 				self.check_services()
+				stop = timeit.default_timer()
+				total_time = stop - start
+				print colored('[INFO] '+ self.current_time() + ' ' + format[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				self.separator()
 				exit(0)
 				
 			elif format[0] == 'integrity':
-				print format[0]
+				start = timeit.default_timer()				
+				self.check_integrity()
+				stop = timeit.default_timer()
+				total_time = stop - start
+				print colored('[INFO] '+ self.current_time() + ' ' + format[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				self.separator()
+				exit(0)
 			else:
 				print colored("Unknown format, need a valid format --h for help\n", self.cwarning,  attrs=['bold'])
 				exit(0)
@@ -130,82 +152,6 @@ class PyAuditingTool(object):
 		print colored('='*99, self.cinfo,attrs='') 
 		return ''
 
-	# get md5sum -b of any path as param (only files -d)
-    def get_md5sum(self,path=''): 
-    	tmpf = self.data_path + 'tmp_md5' + re.sub('/','_',path) + '.txt'
-    	#if exists, create compare one for hashing comparation. 
-    	if os.path.isfile(tmpf): 
-    		tmpf = self.data_path + 'tmp_md5_compare' + re.sub('/','_',path) + '.txt'
-    	elif not os.path.isfile(tmpf):
-    		tmpf = self.data_path + 'tmp_md5' + re.sub('/','_',path) + '.txt'
-
-
-    	print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum -b '+path+'/$file; done > ' + tmpf, self.cok, attrs=['dark']) 
-    	os.system('for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum -b '+path+'/$file; done > ' + tmpf )
-    	return ''
-
-		# os.system('cat tmp_md5' + re.sub('/','_',path) + '.txt')
-
-
-	# Compare md5 checksums on two lists of md5 (old,new)
-    def compare_checksums(self, file1, file2):
-	try:
-
-		# First time running the script -- need ask for re-run 
-		if not os.path.isfile(file2):
-			print colored('[INFO] First time running script or tmp files NOT found. Please, re-run this script. ',self.cinfo, attrs=['bold'])
-			ask = raw_input(colored('Do you want to restart it now? [Y]/[n]: ', self.cwarning, attrs=['bold']))
-			if ask == '': 
-				os.system('./PyAuditingTool.py')
-			else:
-				print colored('Bye ... !\n',self.calert, attrs=['dark'])
-				exit(0)
-
-
-		with open(file1, 'r') as f:
-			for line in f:
-				hash1 =  line.split('*')
-				filename1 = re.sub('\n','',hash1[1])
-				match = self.md5line.match(hash1[0])
-
-				with open(file2, 'r') as f2:
-					for line2 in f2:
-						hash2 =  line2.split('*')
-						filename2 = re.sub('\n','',hash2[1])
-
-						if hash1[0] == hash2[0] and filename1 == filename2:
-							data = '[OK] Hash OK '+hash1[0] +  '| File: ' + filename1 
-							self.save_data(self. report_name, data)
-							print colored(data, self.cok , attrs=['bold'])							
-							
-						elif hash1[0] != hash2[0] and filename1 == filename2:
-							data = '[WARN] File changed, should be '+hash1[0] +  ' and now is ' + hash2[0] +'| File: ' + filename1
-							self.save_data(self. report_name, data)
-							print colored(data , self.cwarning , attrs=['bold'])
-
-
-						
-
-	except IOError, e:		
-		print "Error reading checksums file %s: %s" % (file, e)
-
-	# Check stat on binaries (via config)
-    def get_stat_files(self, path): 
-	print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do stat -c "UID: %u (%U)- GID: %g (%G) %n" '+path+'/$file; done > tmp_stat.txt', self.cok, attrs=['dark'])
-	os.system('for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do stat -c "UID: %u (%U)- GID: %g (%G) %n" '+path+'/$file; done > tmp_stat.txt')
-	try: 
-		with open('tmp_stat.txt', 'r') as f:
-			for line in f:
-				line = re.sub('\n','',line)
-				print colored(line,self.cinfo,attrs=['bold'])
-
-	except IOError:
-		print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
-	return ''
-
-
-
-
     def check_users(self):
     	# config & class loading
 		users = users_module('users')
@@ -224,11 +170,8 @@ class PyAuditingTool(object):
 		return''
 
 
-
-
-
     def check_services(self):
-    	# config & class loading 
+		# config & class loading 
 		services = services_module('services')
 		sshd_path = self.cfg.get_sshd_path()		
 		params = self.cfg.get_sshd_variables2check().split(':')
@@ -239,6 +182,7 @@ class PyAuditingTool(object):
 		self.separator()
 		services.check_sshd(sshd_path, params)
 
+
 		# Apache2 confguration 
 		apache2_path = self.cfg.get_apache2_path()
 		params = self.cfg.get_apache2_variables2check().split(':')
@@ -246,7 +190,9 @@ class PyAuditingTool(object):
 		print colored('[TASK] '+ self.current_time() + ' Checking Apache2 configuration '+ apache2_path ,self.cinfo, attrs=['bold'])
 		self.separator()
 		services.check_apache2(apache2_path, params)
-		print self.separator()
+		self.separator()
+
+
 		return ''
 
 
@@ -258,25 +204,49 @@ class PyAuditingTool(object):
 			print colored(global_info.get_platform(), self.cinfo) 
 			print colored(global_info.get_dist(), self.cinfo)
 			print colored(global_info.get_arquitecture(), self.cinfo)
+			self.separator()	
 
 
+    def check_integrity(self):
+			# call module 
+			integrity = integrity_module('integrity')
+			# task: integrity of binaries defined in config 
+			integrity_paths = self.cfg.get_integrity_paths().split(':')
+			# task: check stat of files (sid,gid,owner,groupowner) defined in config.cfg  
+			stat_paths = self.cfg.get_stat_paths().split(':')
+			for path in stat_paths: 	
+				self.separator()
+				print colored('[TASK] '+ self.current_time() + ' Making stat on files (sid,gid,owner,groupowner) ' + path ,self.cdefault, attrs=['bold'])
+				print integrity.get_stat_files(path)	
+				print colored('[INFO] '+ self.current_time() + ' Remember to check manually on the report ', self.cwarning, attrs=['bold'])
 
+			for path in integrity_paths: 
+				tmppart = re.sub('/','_',path)
+				self.separator()
+				print colored('[TASK] '+ self.current_time() + ' writing md5sum for integrity on ' + path ,self.cinfo, attrs=['bold'])
+				print integrity.get_md5sum(path)	
+
+			for path in integrity_paths: 	
+				tmppart = re.sub('/','_',path)
+				self.separator()	
+				print colored('[TASK] '+ self.current_time() + ' Verifying integrity on ' + path, self.cinfo, attrs=['bold'])	
+				self.separator()	
+				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + 'tmp_md5_compare'+tmppart+'.txt')
+
+			return ''
 
 
 	# Save data for reports 
-    def save_data(self, report, data): 
-
+    def save_data(self, report, data):
 		with open(report, 'a') as f:
 			f.write(data+'\n')
 			f.close 
-
 
 # Init object and start. 
 obj = PyAuditingTool()
 start = timeit.default_timer()
 print colored(obj.banner, obj.cok) 
 print '[INIT]' , obj.current_time() , '[*] Report file: ', obj.report_name
-
 # task: global info: platform , dist 
 obj.global_info()
 
@@ -286,36 +256,9 @@ obj.check_users()
 # task: Check sshd confguration 
 obj.check_services()
 
+# task: Check integrity on binaries via config.cfg
+obj.check_integrity()
 
-
-
-# task: check stat of files (sid,gid,owner,groupowner) defined in config.cfg  
-stat_paths = obj.cfg.get_stat_paths().split(':')
-for path in stat_paths: 	
-	obj.separator()
-	print colored('[TASK] '+ obj.current_time() + ' Making stat on files (sid,gid,owner,groupowner) ' + path ,obj.cdefault, attrs=['bold'])
-	print obj.get_stat_files(path)	
-	print colored('[INFO] '+ obj.current_time() + ' Remember to check manually on the report ', obj.cwarning, attrs=['bold'])
-
-
-
-# task: integrity of binaries defined in config 
-integrity_paths = obj.cfg.get_integrity_paths().split(':')
-
-for path in integrity_paths: 
-	tmppart = re.sub('/','_',path)
-	obj.separator()
-	print colored('[TASK] '+ obj.current_time() + ' writing md5sum for integrity on ' + path ,obj.cinfo, attrs=['bold'])
-	print obj.get_md5sum(path)	
-
-for path in integrity_paths: 	
-	tmppart = re.sub('/','_',path)
-	obj.separator()	
-	print colored('[TASK] '+ obj.current_time() + ' Verifying integrity on ' + path, obj.cinfo, attrs=['bold'])	
-	obj.separator()	
-	obj.compare_checksums(obj.data_path + 'tmp_md5'+tmppart+'.txt', obj.data_path + 'tmp_md5_compare'+tmppart+'.txt')
-
-	
 obj.separator()	
 stop = timeit.default_timer()
 total_time = stop - start
