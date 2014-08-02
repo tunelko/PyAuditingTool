@@ -14,7 +14,7 @@ For now, it checks:
 - Check OpenSSL version for heartbleed vulnerability
 - Check Apache2 configuration (several config parameters)
 - Check sysctl.conf 
-- Check Integrity on binary files defined via config.cfg (two modes: 'since run' or md5sum on packages)
+- Check Integrity (md5sums) on binary files defined via config.cfg (two modes: 'since run' or md5sum on packages)
 
 
 ** I have start to develop this tool on July 29, 2014
