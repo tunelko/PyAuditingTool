@@ -7,11 +7,13 @@ For now, it checks:
 - Global system info
 - Enumerating users with login access & group id 0
 - Enumerating system users and password policy 
+- Enumerating last 20 commands of each user 
 - Stat on binary files defined via config.cfg (uid,gid,owner,groupowner checks)
 - Check users in /etc/sudoers
 - Check SSH configuration 
 - Check OpenSSL version for heartbleed vulnerability
 - Check Apache2 configuration (several config parameters)
+- Check sysctl.conf 
 - Check Integrity on binary files defined via config.cfg (two modes: 'since run' or md5sum on packages)
 
 
