@@ -20,6 +20,10 @@ Not finished yet ! Not fully completed.
 Come back later ... ;)
 
 
+Usage
+==============
+
+
 Mini howto
 ==============
 
@@ -35,3 +39,4 @@ Wiki
 ==============
 
 https://github.com/tunelko/PyAuditingTool/wiki
+
