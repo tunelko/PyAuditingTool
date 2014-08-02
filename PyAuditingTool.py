@@ -11,9 +11,8 @@ __version__ = 'PyAuditingTool v0.2'
 import os, re 
 from datetime import datetime
 from termcolor import colored
-import argparse 
+import argparse
 import timeit
-
 from modules.users_module import users_module
 from modules.services_module import services_module
 from modules.integrity_module import integrity_module
