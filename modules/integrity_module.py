@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 '''
 Created on June 30, 2014
@@ -10,122 +11,112 @@ from datetime import datetime
 from termcolor import colored, cprint 
 import commands
 
-class users_module(object):
-    ''' Class that handles any user-controlled settings '''
+class integrity_module(object):
+		''' Class that handles integrity checks '''
 
-    # Feature enable/disable
-    _integrity_check_dirs = None
+		# Feature enable/disable
+		_integrity_check_dirs = None
 
-    def __init__(self, cfg_file='config.cfg'):
-        self.current_time = lambda: str(datetime.now()).split(' ')[1].split('.')[0]
-        self.min_days = 60  # 2 months password changes
-        self.last_days = 60  
-        self.max_days = 60
+		def __init__(self, cfg_file='config.cfg'):
+				self.current_time = lambda: str(datetime.now()).split(' ')[1].split('.')[0]
+				self.min_days = 60  # 2 months password changes
+				self.last_days = 60  
+				self.max_days = 60
 
-        self.cwarning = 'red'
-        self.cinfo = 'blue' 
-        self.calert = 'yellow'
-        self.cok = 'green'
-        self.cdefault = 'green' 
-        self.symalert = '**' 
-        self.md5line = re.compile(r"^(\\?)([0-9a-f]{32}) [\ \*](.*)$")
-        #paths 
-        self.data_path = 'data/'
-        self.reports_path = 'reports/'
-        # report name  
-        self.report_name = 'tmp_report_' + str(datetime.date(datetime.now())) + '__' + str(self.current_time()) + '.txt'         
-        
+				self.cwarning = 'red'
+				self.cinfo = 'blue' 
+				self.calert = 'yellow'
+				self.cok = 'green'
+				self.cdefault = 'green' 
+				self.symalert = '**' 
+				self.md5line = re.compile(r"^(\\?)([0-9a-f]{32}) [\ \*](.*)$")
+				#paths 
+				self.data_path = 'data/'
+				self.reports_path = 'reports/'
+				# report name  
+				self.report_name = 'tmp_report_' + str(datetime.date(datetime.now())) + '__' + str(self.current_time()) + '.txt'         
+				
 
-    # Dummy separator 
-    def separator(self,attrs=''): 
-        print colored('='*99, self.cinfo,attrs='') 
-        return ''
-    # Call user/groups enum, several users checks  
-    def get_enum_usergroups(self):
-        users_login_access=[]
-        users_grp0=[]
+		# Dummy separator 
+		def separator(self,attrs=''): 
+				print colored('='*99, self.cinfo,attrs='') 
+				return ''
 
-        os.system('cat /etc/passwd > /tmp/tmp_users.txt')
-        with open('/tmp/tmp_users.txt','r') as tmp:
-            for entry in tmp:
-                #print entry
-                lines = entry.split(':')
-                username=lines[0]
-                uid = lines[3]
-                gid = lines[4]
-                #print 'Effective User ID is', pwd.getpwuid(int(uid))[0]
-                shell = re.sub('\n','',lines[6])
-                group = grp.getgrgid(uid)[0]
-                os.system('grep -e "^'+username+'" /etc/passwd | awk -F: {\'print $6\'}>>tmp_cmds.txt')
-
-                # list system users with login access 
-                if shell != '/bin/false' and  shell != '/usr/sbin/nologin':
-                    print colored('[INFO] Username with login access: '+username+'('+group+')'+' - please check manually' , self.cwarning,attrs=['bold'])
-                    users_login_access.append(username)
-                else: 
-                    print colored('[INFO] Username with no shell: '+username +'('+group+')', self.cinfo,attrs=['bold'])
+	# get md5sum -b of any path as param (only files -d)
+		def get_md5sum(self,path=''): 
+			tmpf = self.data_path + 'tmp_md5' + re.sub('/','_',path) + '.txt'
+			#if exists, create compare one for hashing comparation. 
+			if os.path.isfile(tmpf): 
+				tmpf = self.data_path + 'tmp_md5_compare' + re.sub('/','_',path) + '.txt'
+			elif not os.path.isfile(tmpf):
+				tmpf = self.data_path + 'tmp_md5' + re.sub('/','_',path) + '.txt'
 
 
-                # Check for user group id 0 
-                if uid == '0' and username != 'root': 
-                    print colored('[INFO] Warning! Check this username group: '+username +'('+group+')', self.cwarning,attrs=['bold'])  
-                    users_grp0.append(username)             
-                else:
-                    print colored('[INFO] Testing GROUP ID 0 for user: ' + username +'('+group+') Correct! '  , self.cok,attrs=['bold'])
-                    
-                # Check for user group id 0 
-                if uid == False and gid == False:
-                    print colored('[INFO] Warning! Owner and group not found for: '+username +'('+group+')', self.cwarning,attrs=['bold'])  
+			print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum -b '+path+'/$file; done > ' + tmpf, self.cok, attrs=['dark']) 
+			os.system('for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum -b '+path+'/$file; done > ' + tmpf )
+			return ''
 
-                
-            #last 10 cmds per user 
-            with open('tmp_cmds.txt','r') as tmp:
-                for entry in tmp:
-                    history = re.sub('\n','',entry+'/.bash_history')
-                    if os.path.isfile(history): 
-                        print self.separator()
-                        print colored('[INFO] Last commands for user '+entry, self.cinfo,attrs=['bold'])
-                        print self.separator()
-                        os.system('head -n20 '+history+'|cat -n')
-
-            # print 'resume:' , users_login_access
-            os.remove('tmp_cmds.txt')
-            return ''
-
-    # Password policiy checks 
-    def get_policy_usergroups(self):
-        #initialize lists
-        users = []
-        groups = []
-        #get password & groups 
-        users_db = spwd.getspall() 
-        group_db = grp.getgrall()
-        #print users_db, group_db
-        try:
-            #check passwd policiy foreach user
-            for entry in users_db:
-                username = entry[0]
-                self.separator()
-                print colored('[CMD] Executing: chage -l  ' + username , self.calert, attrs=['dark']) 
-                os.system('chage -l  ' + username + '> tmp_password_policy.txt')
-                os.system('cat tmp_password_policy.txt')
-                # self.save_data(self.report_name, os.system('cat tmp_password_policy.txt'))
-                #TO-DO: set recommendations 
+		# os.system('cat tmp_md5' + re.sub('/','_',path) + '.txt')
 
 
-        except:
-            print "There was a problem running the script."
-            return ''       
+	# Compare md5 checksums on two lists of md5 (old,new)
+		def compare_checksums(self, file1, file2):
+			try:
 
-    # Check Sudoers config (via config values)
-    def get_sudoers(self, file):    
-        try: 
-            with open(file, 'r') as f:
-                    for line in f:
-                        line = re.sub('\n','',line)
-                        if re.sub(r'#.*$','',line):                     
-                            print colored(line,self.cinfo,attrs=['bold'])
+				# First time running the script -- need ask for re-run 
+				if not os.path.isfile(file2):
+					print colored('[INFO] First time running script or tmp files NOT found. Please, re-run this script. ',self.cinfo, attrs=['bold'])
+					ask = raw_input(colored('Do you want to restart it now? [Y]/[n]: ', self.cwarning, attrs=['bold']))
+					if ask == '': 
+						os.system('./PyAuditingTool.py')
+					else:
+						print colored('Bye ... !\n',self.calert, attrs=['dark'])
+						exit(0)
 
-        except IOError:
-            print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
-        return ''
+
+				with open(file1, 'r') as f:
+					for line in f:
+						hash1 =  line.split('*')
+						filename1 = re.sub('\n','',hash1[1])
+						match = self.md5line.match(hash1[0])
+
+						with open(file2, 'r') as f2:
+							for line2 in f2:
+								hash2 =  line2.split('*')
+								filename2 = re.sub('\n','',hash2[1])
+
+								if hash1[0] == hash2[0] and filename1 == filename2:
+									data = '[OK] Hash OK '+hash1[0] +  '| File: ' + filename1 
+									self.save_data(self. report_name, data)
+									print colored(data, self.cok , attrs=['bold'])							
+									
+								elif hash1[0] != hash2[0] and filename1 == filename2:
+									data = '[WARN] File changed, should be '+hash1[0] +  ' and now is ' + hash2[0] +'| File: ' + filename1
+									self.save_data(self. report_name, data)
+									print colored(data , self.cwarning , attrs=['bold'])
+
+
+								
+
+			except IOError, e:		
+				print "Error reading checksums file %s: %s" % (file, e)
+
+	# Check stat on binaries (via config)
+		def get_stat_files(self, path): 
+			print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do stat -c "UID: %u (%U)- GID: %g (%G) %n" '+path+'/$file; done > tmp_stat.txt', self.cok, attrs=['dark'])
+			os.system('for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do stat -c "UID: %u (%U)- GID: %g (%G) %n" '+path+'/$file; done > tmp_stat.txt')
+			try: 
+				with open('tmp_stat.txt', 'r') as f:
+					for line in f:
+						line = re.sub('\n','',line)
+						print colored(line,self.cinfo,attrs=['bold'])
+
+			except IOError:
+				print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
+			return ''
+
+		# Save data for reports 
+		def save_data(self, report, data):
+			with open(report, 'a') as f:
+				f.write(data+'\n')
+				f.close 
