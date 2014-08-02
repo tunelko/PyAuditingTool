@@ -126,6 +126,11 @@ class PyAuditingTool(object):
 			# Specify only to run a check
 			if args.run_only is not None:
 			    run_only(args.run_only)
+
+			# Get updates from URL 
+			if args.remove_data:
+			    self.remove_data()
+			    exit(0)
 			    
 			# Get updates from URL 
 			if args.get_updates:
@@ -139,6 +144,7 @@ class PyAuditingTool(object):
 		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")		    
 		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: global_info, users, services, integrity")
 		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
+		    parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
 		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
 		    main(parser.parse_args())
 
@@ -241,6 +247,24 @@ class PyAuditingTool(object):
 		with open(report, 'a') as f:
 			f.write(data+'\n')
 			f.close 
+
+	# Delete integrity data
+    def remove_data(self):
+			ask = raw_input(colored('Do you want to DELETE data? [Y]/[n]: ', self.cwarning, attrs=['bold']))
+			if ask == '':
+				for the_file in os.listdir(self.data_path):
+					file_path = os.path.join(self.data_path, the_file)
+					try:
+						if os.path.isfile(file_path):
+						    os.unlink(file_path)
+						    print colored('[INFO] removed ' + file_path + '',self.cinfo,attrs=['bold']) 
+					except Exception, e:
+						print e
+			else:
+				print colored('Bye ... !\n',self.calert, attrs=['dark'])
+				exit(0)						
+
+		
 
 # Init object and start. 
 obj = PyAuditingTool()
