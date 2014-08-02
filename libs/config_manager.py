@@ -59,6 +59,12 @@ class config_manager(object):
 
     def get_sudoers_path(self):
             return self.config.get("System", 'sudoers_path')
+
+    def get_sysctl_path(self):
+            return self.config.get("Services", 'sysctl_path')
+
+    def get_sysctl_variables2check(self):
+            return self.config.get("Services", 'sysctl_variables2check')
     
 
             
