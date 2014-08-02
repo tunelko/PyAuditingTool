@@ -40,7 +40,7 @@ Usage
                           integrity
     -ca, --cache          Do not start over again, get cached data
     -ff, --flush          Delete any previous data
-    -u, --update          Update to the last version of PyAuditingTool
+    -u, --update          Update to the lastest version of PyAuditingTool
 
 Mini howto
 ==============
