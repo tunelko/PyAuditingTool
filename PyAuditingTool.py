@@ -152,7 +152,7 @@ class PyAuditingTool(object):
 	# Check requirements before run 
     def check_requirements(self):
     	if os.geteuid() != 0:
-			exit(colored("-- [INFO] -- You need to be root to run this script. Exiting ... \n", self.cwarning, attrs=['bold']))
+				exit(colored("-- [INFO] -- You need to be root to run this script. Exiting ... \n", self.cwarning, attrs=['bold']))
 
 	# Dummy separator 
     def separator(self,attrs=''): 
@@ -187,7 +187,8 @@ class PyAuditingTool(object):
 		self.separator()
 		print colored('[TASK] '+ self.current_time() + ' Checking SSH configuration '+ sshd_path ,self.cinfo, attrs=['bold'])
 		self.separator()
-		services.check_sshd(sshd_path, params)
+		services.check_heartbleed()		
+		services.check_services(sshd_path, params)
 
 
 		# Apache2 confguration 
@@ -196,7 +197,16 @@ class PyAuditingTool(object):
 		self.separator()
 		print colored('[TASK] '+ self.current_time() + ' Checking Apache2 configuration '+ apache2_path ,self.cinfo, attrs=['bold'])
 		self.separator()
-		services.check_apache2(apache2_path, params)
+		services.check_services(apache2_path, params)
+		self.separator()
+
+		# Sysclt confguration 
+		sysctl_path = self.cfg.get_sysctl_path()
+		params = self.cfg.get_sysctl_variables2check().split(':')		
+		
+		print colored('[TASK] '+ self.current_time() + ' Checking sysctl configuration '+ sysctl_path ,self.cinfo, attrs=['bold'])
+		self.separator()
+		services.check_services(sysctl_path, params,delimiter=' = ')
 		self.separator()
 
 

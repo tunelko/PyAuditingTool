@@ -40,14 +40,7 @@ class services_module(object):
 		return ''
 
 
-	# Check SSH config (via config values)
-	def check_sshd(self, filepath, params = []):
-
-		try:
-			sshd_variables=[]       
-			sshd_variables_ok=[]
-			sshd_variables_nok=[]
-
+	def check_heartbleed(self):
 			status, sshv =  commands.getstatusoutput("dpkg -s openssl | grep Version:.*$")
 			status, heartbleed_vuln =  commands.getstatusoutput("dpkg -s openssl | grep -Ei '\b(Version: (1)\W+)\b'")
 
@@ -58,63 +51,38 @@ class services_module(object):
 				print colored('[INFO] OpenSSL version (not vulnerable):' + sshv, self.cok,attrs=['bold'])
 				self.separator()
 
+
+	# Check SSH config (via config values)
+	def check_services(self, filepath, params = [], delimiter=' '):
+		try:
+			variables=[]       
+			variables_ok=[]
+			variables_nok=[]
+
 			with open(filepath, 'r') as f:
 				for line in f:
-					pairs =  line.split(' ')
+					pairs =  line.split(delimiter)
 					if len(pairs)==2:
 						key = pairs[0]
 						value = re.sub('\n','',pairs[1])
-						sshd_variables.append(key+' ' +value)
+						variables.append(key+' ' +value)
 
 			for valc in params:       
-				for val in sshd_variables:
+				for val in variables:
 					if val in valc:
 						print colored('[INFO] Value OK: ' + val,self.cok,attrs=['bold'])
-						sshd_variables_ok.append(val)
+						variables_ok.append(val)
 					else:               
-						sshd_variables_nok.append(val)
+						variables_nok.append(val)
 
-			resulting_list = list(set(sshd_variables_nok) - set(sshd_variables_ok))
-			for val in resulting_list:      
+			resulting_list = list(set(variables_nok) - set(variables_ok))
+
+			for val in resulting_list:				
 				if re.sub(r'#.*$','',val):
+					#print val 
 					print colored('[WARN] Value not match, commented or not include in filters: ' + val,self.cwarning,attrs=['bold'])
 
 		except IOError, e:
 				print colored('[ERROR] filepath not found, check config value: ssh2_path = ' + filepath, self.cwarning,attrs=['bold'] )
 				return ''
 		
-	# Check Apache2 config (via config values)
-	def check_apache2(self, filepath, params = []):
-		try:
-			apache2_variables=[]
-			apache2_variables_ok=[]
-			apache2_variables_nok=[]
-
-			with open(filepath, 'r') as f:
-					for line in f:
-						pairs =  line.split(' ')
-						if len(pairs)==2:
-							key = pairs[0]
-							value = re.sub('\n','',pairs[1])
-							apache2_variables.append(key+' ' +value)
-
-			for valc in params:        
-				for val in apache2_variables:
-					if val in valc:
-						print colored('[INFO] Value OK: ' + val,self.cok,attrs=['bold'])
-						apache2_variables_ok.append(val)
-					else:               
-						apache2_variables_nok.append(val)
-
-			resulting_list = list(set(apache2_variables_nok) - set(apache2_variables_ok))
-
-			for val in resulting_list:      
-				if re.sub(r'#.*$','',val):
-					print colored('[WARN] Value not match, commented or not include in filters: ' + val,self.cwarning,attrs=['bold'])
-			
-
-
-		except IOError:
-			print colored('[ERROR] filepath not found, check config value: apache2_path=' + filepath, self.cwarning,attrs=['bold'] )
-			return ''
-			
