@@ -7,15 +7,16 @@ For now, it checks:
 - Global system info (platform, arquitecture, alias, ...)
 - Check users with login access & group id 0
 - Check password policy age 
-- Check last 20 commands of each user 
+- Show last 'number' of commands of each user (number defined via config.cfg) 
 - Check uid,gid,owner,groupowner on binary files defined via config.cfg
-- Check users in /etc/sudoers
-- Check SSH configuration 
+- Check users in /etc/sudoers 
+- Check SSH configuration (several config parameters)
 - Check OpenSSL version for heartbleed vulnerability
 - Check Apache2 configuration (several config parameters)
-- Check sysctl.conf 
-- Check Integrity (md5sums) on binary files defined via config.cfg with two modes: 'since run' or md5sum on packages
-
+- Check sysctl.conf (several config parameters)
+- Check Integrity (md5sums) on binary files defined via config.cfg with two modes:
+    - Via local compare
+    - MD5sums on packages
 
 ** I have start to develop this tool on July 29, 2014
 Not finished yet ! Not fully completed.
