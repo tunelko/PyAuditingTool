@@ -78,9 +78,8 @@ class services_module(object):
 			resulting_list = list(set(variables_nok) - set(variables_ok))
 
 			for val in resulting_list:				
-				if re.sub(r'#.*$','',val):
-					#print val 
-					print colored('[WARN] Value not match, commented or not include in filters: ' + val,self.cwarning,attrs=['bold'])
+				if val.startswith("#"):					
+					print colored('[WARN] Value is commented and not processed by the filters: ' + val,self.cwarning,attrs=['bold'])
 
 		except IOError, e:
 				print colored('[ERROR] filepath not found, check config value: ssh2_path = ' + filepath, self.cwarning,attrs=['bold'] )
