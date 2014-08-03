@@ -76,7 +76,7 @@ class PyAuditingTool(object):
 		# Call to run a check 
 		def run_only(option):
 			#global_info, users, services, stat, integrity
-			if option[0] == 'global_info':				
+			if option[0] == 'info':				
 				print colored(self.banner, self.cok)
 				start = timeit.default_timer()
 				self.separator()
@@ -164,7 +164,7 @@ class PyAuditingTool(object):
 		    parser.add_argument("-v", "--version", action='version', help="show version", version=__version__ +' by ' + __author__)
 		    parser.add_argument("-c", "--create-report", action='store_true', dest='create_report', help="create report (default HTML format)")
 		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")		    
-		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: 'global_info', 'users', 'services', 'integrity [local_compare]'")
+		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: 'info', 'users', 'services', 'integrity [local_compare]'")
 		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
 		    parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
 		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
