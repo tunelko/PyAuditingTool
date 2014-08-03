@@ -19,10 +19,7 @@ class integrity_module(object):
 
 		def __init__(self, cfg_file='config.cfg'):
 				self.current_time = lambda: str(datetime.now()).split(' ')[1].split('.')[0]
-				self.min_days = 60  # 2 months password changes
-				self.last_days = 60  
-				self.max_days = 60
-
+				self.atdatetime = str(datetime.date(datetime.now())) + '_at_' + str(self.current_time())
 				self.cwarning = 'red'
 				self.cinfo = 'blue' 
 				self.calert = 'yellow'
@@ -34,7 +31,7 @@ class integrity_module(object):
 				self.data_path = 'data/'
 				self.reports_path = 'reports/'
 				# report name  
-				self.report_name = 'tmp_report_' + str(datetime.date(datetime.now())) + '__' + str(self.current_time()) + '.txt'         
+				self.report_name = 'tmp_report_' + self.atdatetime + '.txt'                
 				
 
 		# Dummy separator 
