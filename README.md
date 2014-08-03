@@ -50,6 +50,7 @@ How to start?
 
 First, run [install.sh](https://github.com/tunelko/PyAuditingTool/blob/master/install.sh) to meet dependencies. 
 Then, give a try with: 
+
     $ python PyAuditingTool -h
 
 Reports
