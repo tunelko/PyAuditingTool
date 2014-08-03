@@ -42,7 +42,11 @@ class PyAuditingTool(object):
 		self.cok = 'green'
 		self.cdefault = 'green' 
 		self.symalert = '**' 
-		self.md5line = re.compile(r"^(\\?)([0-9a-f]{32}) [\ \*](.*)$")
+		self.path = ''
+		self.compare_md5_file = 'tmp_md5_compare_packages.txt'
+		self.tmppath = self.path[:1].replace('/','') + self.path[1:]
+		self.cmd = 'cat /var/lib/dpkg/info/*.md5sums|grep -E "^[0-9a-f]{32}  ' + self.tmppath + '" > data/tmp_md5_compare_packages.txt'
+
 		#paths 
 		self.data_path = 'data/'
 		self.reports_path = 'reports/'
@@ -67,43 +71,57 @@ class PyAuditingTool(object):
 				exit(0)
 
 		# Call to run a check 
-		def run_only(format):
+		def run_only(option):
 			#global_info, users, services, stat, integrity
-			if format[0] == 'global_info':
+			if option[0] == 'global_info':				
+				print colored(self.banner, self.cok)
 				start = timeit.default_timer()
 				self.separator()
 				self.global_info()
 				stop = timeit.default_timer()
 				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + format[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
 				self.separator()
 				exit(0)
 
-			elif format[0] == 'users':
+			elif option[0] == 'users':
+				print colored(self.banner, self.cok)
 				# call to check_users part
 				start = timeit.default_timer()				
 				self.check_users()
 				stop = timeit.default_timer()
 				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + format[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
 				self.separator()
 				exit(0)
 				
-			elif format[0] == 'services':
+			elif option[0] == 'services':
+				print colored(self.banner, self.cok)
 				start = timeit.default_timer()				
 				self.check_services()
 				stop = timeit.default_timer()
 				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + format[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
 				self.separator()
 				exit(0)
 				
-			elif format[0] == 'integrity':
+			elif option[0] == 'integrity' and len(option) == 1:
+				print colored(self.banner, self.cok)				
+				start = timeit.default_timer()				
+				self.check_integrity_packages()
+				stop = timeit.default_timer()
+				total_time = stop - start
+				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				self.separator()
+				exit(0)
+
+			elif option[0] == 'integrity' and option[1] == 'local_compare':
+				print colored(self.banner, self.cok)				
 				start = timeit.default_timer()				
 				self.check_integrity()
 				stop = timeit.default_timer()
 				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + format[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
 				self.separator()
 				exit(0)
 			else:
@@ -143,7 +161,7 @@ class PyAuditingTool(object):
 		    parser.add_argument("-v", "--version", action='version', help="show version", version=__version__ +' by ' + __author__)
 		    parser.add_argument("-c", "--create-report", action='store_true', dest='create_report', help="create report (default HTML format)")
 		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")		    
-		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: global_info, users, services, integrity")
+		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: 'global_info', 'users', 'services', 'integrity [running-compare]'")
 		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
 		    parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
 		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
@@ -224,6 +242,7 @@ class PyAuditingTool(object):
 			self.separator()	
 
 
+		# Check integrity against first comparation running (on each path)
     def check_integrity(self):
 			# call module 
 			integrity = integrity_module('integrity')
@@ -240,17 +259,54 @@ class PyAuditingTool(object):
 			for path in integrity_paths: 
 				tmppart = re.sub('/','_',path)
 				self.separator()
-				print colored('[TASK] '+ self.current_time() + ' writing md5sum for integrity on ' + path ,self.cinfo, attrs=['bold'])
+				print colored('[TASK] '+ self.current_time() + ' md5sum for integrity on ' + path ,self.cinfo, attrs=['bold'])
+				print integrity.get_md5sum(path)	
+
+			for path in integrity_paths:
+				tmppart = re.sub('/','_',path)
+				self.separator()	
+				print colored('[TASK] '+ self.current_time() + ' Verifying integrity on ' + path, self.cinfo, attrs=['bold'])	
+				self.separator()					
+				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + 'tmp_md5_compare'+tmppart+'.txt', delimiter='  ')
+
+			return ''
+
+
+			# Check integrity on system md5sums path 
+    def check_integrity_packages(self):
+			# call module 
+			integrity = integrity_module('integrity')
+			# task: integrity of binaries defined in config 
+			integrity_paths = self.cfg.get_integrity_paths().split(':')
+			md5pakages_paths = self.cfg.get_md5packages_paths()
+
+			# task: check stat of files (sid,gid,owner,groupowner) defined in config.cfg  
+			stat_paths = self.cfg.get_stat_paths().split(':')
+			for path in stat_paths: 	
+				self.separator()
+				print colored('[TASK] '+ self.current_time() + ' Making stat on files (sid,gid,owner,groupowner) ' + path ,self.cdefault, attrs=['bold'])
+				print integrity.get_stat_files(path)	
+				print colored('[INFO] '+ self.current_time() + ' Remember to check manually on the report ', self.cwarning, attrs=['bold'])
+
+			for path in integrity_paths: 
+				tmppart = re.sub('/','_',path)
+				self.separator()
+				print colored('[TASK] '+ self.current_time() + ' checking md5sums PACKAGES MODE   ' + path ,self.cinfo, attrs=['bold'])
 				print integrity.get_md5sum(path)	
 
 			for path in integrity_paths: 	
 				tmppart = re.sub('/','_',path)
+				compare_md5_file = 'tmp_md5_compare_packages.txt'
+				tmppath = path[:1].replace('/','') + path[1:]
+				cmd = 'cat '+md5pakages_paths+'*.md5sums|grep -E "^[0-9a-f]{32}  ' + tmppath + '" > data/tmp_md5_compare_packages.txt'
 				self.separator()	
 				print colored('[TASK] '+ self.current_time() + ' Verifying integrity on ' + path, self.cinfo, attrs=['bold'])	
 				self.separator()	
-				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + 'tmp_md5_compare'+tmppart+'.txt')
+				print colored('[CMD] Executing:' + cmd , self.cok, attrs=['dark']) 
+				os.system(cmd)
+				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + compare_md5_file, delimiter='  ')				
 
-			return ''
+			return ''			
 
 		# Update via Github
     def get_updates(self): 
@@ -294,8 +350,8 @@ obj.check_users()
 # task: Check sshd confguration 
 obj.check_services()
 
-# task: Check integrity on binaries via config.cfg
-obj.check_integrity()
+# task: Check integrity on binaries via config.cfg (default: md5sums packages)
+obj.check_integrity_packages()
 
 obj.separator()	
 stop = timeit.default_timer()

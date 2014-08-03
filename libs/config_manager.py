@@ -42,6 +42,9 @@ class config_manager(object):
     def get_integrity_paths(self):
         return self.config.get("Integrity", 'integrity_check_dirs')
 
+    def get_md5packages_paths(self):
+        return self.config.get("Integrity", 'md5packages_paths')
+
     def get_stat_paths(self):
         return self.config.get("System", 'stat_check_dirs')
     

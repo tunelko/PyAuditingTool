@@ -52,20 +52,20 @@ class integrity_module(object):
 				tmpf = self.data_path + 'tmp_md5' + re.sub('/','_',path) + '.txt'
 
 
-			print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum -b '+path+'/$file; done > ' + tmpf, self.cok, attrs=['dark']) 
-			os.system('for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum -b '+path+'/$file; done > ' + tmpf )
+			print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum '+path+'/$file; done > ' + tmpf, self.cok, attrs=['dark']) 
+			os.system('for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum '+path+'/$file; done > ' + tmpf )
 			return ''
 
 		# os.system('cat tmp_md5' + re.sub('/','_',path) + '.txt')
 
 
 	# Compare md5 checksums on two lists of md5 (old,new)
-		def compare_checksums(self, file1, file2):
+	# whatever integrity or integrity packages. 
+		def compare_checksums(self, src, dst, delimiter='  '):
 			try:
-
 				# First time running the script -- need ask for re-run 
-				if not os.path.isfile(file2):
-					print colored('[INFO] First time running script or tmp files NOT found. Please, re-run this script. ',self.cinfo, attrs=['bold'])
+				if not os.path.isfile(dst):
+					print colored('[INFO] First time running script, tmp_md5 files NOT found. Please, re-run this script. ',self.cinfo, attrs=['bold'])
 					ask = raw_input(colored('Do you want to restart it now? [Y]/[n]: ', self.cwarning, attrs=['bold']))
 					if ask == '': 
 						os.system('./PyAuditingTool.py')
@@ -73,17 +73,22 @@ class integrity_module(object):
 						print colored('Bye ... !\n',self.calert, attrs=['dark'])
 						exit(0)
 
-
-				with open(file1, 'r') as f:
+			  # open for reading src
+				with open(src, 'r') as f:
 					for line in f:
-						hash1 =  line.split('*')
-						filename1 = re.sub('\n','',hash1[1])
-						match = self.md5line.match(hash1[0])
+						hash1 =  line.split(delimiter)
+						filename1 = re.sub('\n','',hash1[1])						
 
-						with open(file2, 'r') as f2:
-							for line2 in f2:
-								hash2 =  line2.split('*')
+						with open(dst, 'r') as f2:
+							for line2 in f2:								
+
+								hash2 =  line2.split(delimiter)								
 								filename2 = re.sub('\n','',hash2[1])
+								
+								if dst == 'data/tmp_md5_compare_packages.txt':
+									 filename2 = '/'+filename2
+
+								#print  hash1[0] ,'==', hash2[0] ,'and', filename1 ,'==', filename2
 
 								if hash1[0] == hash2[0] and filename1 == filename2:
 									data = '[OK] Hash OK '+hash1[0] +  '| File: ' + filename1 
@@ -91,15 +96,14 @@ class integrity_module(object):
 									print colored(data, self.cok , attrs=['bold'])							
 									
 								elif hash1[0] != hash2[0] and filename1 == filename2:
-									data = '[WARN] File changed, should be '+hash1[0] +  ' and now is ' + hash2[0] +'| File: ' + filename1
+									data = '[WARN] File changed, should be '+hash1[0] +  ' and now is ' + hash2[0] +'| File: ' + filename1									
 									self.save_data(self. report_name, data)
 									print colored(data , self.cwarning , attrs=['bold'])
 
-
-								
-
 			except IOError, e:		
 				print "Error reading checksums file %s: %s" % (file, e)
+
+			#print hash_changed
 
 	# Check stat on binaries (via config)
 		def get_stat_files(self, path): 
