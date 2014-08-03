@@ -36,6 +36,8 @@ class users_module(object):
 		def separator(self,attrs=''): 
 				print colored('='*99, self.cinfo,attrs='') 
 				return ''
+
+
 		# Call user/groups enum, several users checks  
 		def get_enum_usergroups(self, number_of_commands_per_user='20'):
 				users_login_access=[]
@@ -72,6 +74,8 @@ class users_module(object):
 								# Check for user group id 0 
 								if uid == False and gid == False:
 										print colored('[WARN] Owner and group not found for: '+username +'('+group+')', self.cwarning,attrs=['bold'])  
+
+								
 
 								
 						#last X cmds per user 

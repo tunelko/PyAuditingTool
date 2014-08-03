@@ -82,8 +82,8 @@ class PyAuditingTool(object):
 				self.separator()
 				self.global_info()
 				stop = timeit.default_timer()
-				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				total_time = stop - start				
+				print colored('[INFO] '+ self.current_time() + ' (' + option[0] +') running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
 				self.separator()
 				exit(0)
 
@@ -94,7 +94,8 @@ class PyAuditingTool(object):
 				self.check_users()
 				stop = timeit.default_timer()
 				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				self.separator()
+				print colored('[INFO] '+ self.current_time() + ' (' + option[0] +') checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])
 				self.separator()
 				exit(0)
 				
@@ -104,7 +105,7 @@ class PyAuditingTool(object):
 				self.check_services()
 				stop = timeit.default_timer()
 				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				print colored('[INFO] '+ self.current_time() + ' (' + option[0] +') checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])
 				self.separator()
 				exit(0)
 				
@@ -114,7 +115,7 @@ class PyAuditingTool(object):
 				self.check_integrity_packages()
 				stop = timeit.default_timer()
 				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				print colored('[INFO] '+ self.current_time() + ' (' + option[0] +') checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])
 				self.separator()
 				exit(0)
 
@@ -124,7 +125,7 @@ class PyAuditingTool(object):
 				self.check_integrity()
 				stop = timeit.default_timer()
 				total_time = stop - start
-				print colored('[INFO] '+ self.current_time() + ' ' + option[0] +'  running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
+				print colored('[INFO] '+ self.current_time() + ' (' + option[0] +') checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])
 				self.separator()
 				exit(0)
 			else:
