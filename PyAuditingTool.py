@@ -200,15 +200,15 @@ class PyAuditingTool(object):
 		number_of_commands_per_user = self.cfg.get_number_of_commands_per_user()
 
 		print users.separator()
-		print colored('[TASK] '+ self.current_time() + ' Enumerating users with login access & group id 0',self.cinfo, attrs=['bold'])
+		print colored('[TASK] '+ self.current_time() + ' Checking users ... ',self.cinfo, attrs=['bold'])
 		print users.get_enum_usergroups(number_of_commands_per_user)						
 		print users.separator()		
-		print colored('[TASK] '+ self.current_time() + ' Enumerating system users and password policy ',self.cinfo, attrs=['bold'])
+		print colored('[TASK] '+ self.current_time() + ' Checking password policy ...',self.cinfo, attrs=['bold'])
 		print users.get_policy_usergroups()		
-		print colored('[TASK] '+ self.current_time() + ' Getting users in ' + sudoers ,self.cinfo, attrs=['bold'])
+		print colored('[TASK] '+ self.current_time() + ' Checking users in ' + sudoers ,self.cinfo, attrs=['bold'])
 		print users.separator()
 		print users.get_sudoers(sudoers)
-		print colored('[INFO] '+ self.current_time() + ' Check if the users above are right to be in ' + sudoers ,self.cwarning, attrs=['bold'])
+		print colored('[INFO] '+ self.current_time() + ' Please, check if the users above are right for ' + sudoers ,self.cwarning, attrs=['bold'])
 		return''
 
 
@@ -258,14 +258,14 @@ class PyAuditingTool(object):
 			stat_paths = self.cfg.get_stat_paths().split(':')
 			for path in stat_paths: 	
 				self.separator()
-				print colored('[TASK] '+ self.current_time() + ' Making stat on files (sid,gid,owner,groupowner) ' + path ,self.cdefault, attrs=['bold'])
+				print colored('[TASK] '+ self.current_time() + ' Checking stat (sid,gid,owner,groupowner) ' + path ,self.cdefault, attrs=['bold'])
 				print integrity.get_stat_files(path)	
 				print colored('[INFO] '+ self.current_time() + ' Remember to check manually on the report ', self.cwarning, attrs=['bold'])
 
 			for path in integrity_paths: 
 				tmppart = re.sub('/','_',path)
 				self.separator()
-				print colored('[TASK] '+ self.current_time() + ' md5sum for integrity on ' + path ,self.cinfo, attrs=['bold'])
+				print colored('[TASK] '+ self.current_time() + ' Checking integrity MODE local_compare: ' + path ,self.cinfo, attrs=['bold'])
 				print integrity.get_md5sum(path)	
 
 			for path in integrity_paths:
@@ -297,7 +297,7 @@ class PyAuditingTool(object):
 			for path in integrity_paths: 
 				tmppart = re.sub('/','_',path)
 				self.separator()
-				print colored('[TASK] '+ self.current_time() + ' checking md5sums PACKAGES MODE   ' + path ,self.cinfo, attrs=['bold'])
+				print colored('[TASK] '+ self.current_time() + ' Checking integrity MODE packages: ' + path ,self.cinfo, attrs=['bold'])
 				print integrity.get_md5sum(path)	
 
 			for path in integrity_paths: 	
@@ -327,7 +327,7 @@ class PyAuditingTool(object):
 
 	# Delete integrity data
     def remove_data(self):
-			ask = raw_input(colored('Do you want to DELETE integrity data? [Y]/[n]: ', self.cwarning, attrs=['bold']))
+			ask = raw_input(colored('Integrity data (data/*) will be lost, Do you want to delete? [Y]/[n]: ', self.cwarning, attrs=['bold']))
 			if ask == '' or ask == 'y' or ask == 'Y':
 				for the_file in os.listdir(self.data_path):
 					file_path = os.path.join(self.data_path, the_file)
