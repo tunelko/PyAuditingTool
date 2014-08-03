@@ -45,11 +45,12 @@ Usage
       -u, --update          Update to the last version of PyAuditingTool
 
 
-Mini how-to
+How to start?
 ==============
 
-1. First, run [install.sh](https://github.com/tunelko/PyAuditingTool/blob/master/install.sh) to meet dependencies. 
-2. In the first run, the tool collects some information for integrity checks, asking you to re-run it (it's normal)
+First, run [install.sh](https://github.com/tunelko/PyAuditingTool/blob/master/install.sh) to meet dependencies. 
+Then, give a try with: 
+    $ python PyAuditingTool -h
 
 Reports
 ==============
