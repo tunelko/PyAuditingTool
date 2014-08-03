@@ -53,9 +53,9 @@ Then, give a try with:
 
     $ ./PyAuditingTool.py -h
 
-Reports
+About report output
 ==============
-You can create reports in several common formats: HTML, XML, CSV, TXT with --format [FORMAT] option. Reports will be stored on reports folder. HTML is the default one. 
+You can create reports in several common formats: HTML, XML, CSV, TXT with --format [FORMAT] option. Reports will be stored on reports folder. HTML is the default one. PyAuditingTool uses Jinja2 template system. 
 
 
 Wiki
