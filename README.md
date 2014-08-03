@@ -26,34 +26,36 @@ Come back later ... ;)
 Usage
 ==============
 
-   usage: PyAuditingTool.py [-h] [-v] [-c] [-f SET_FORMAT [SET_FORMAT ...]]
-                         [-ro RUN_ONLY [RUN_ONLY ...]] [-ca] [-ff] [-u]
+    usage: PyAuditingTool.py [-h] [-v] [-c] [-f SET_FORMAT [SET_FORMAT ...]]
+                             [-ro RUN_ONLY [RUN_ONLY ...]] [-ca] [-ff] [-u]
+    
+    PyAuditingTool: A tool to test GNU/Linux security and configuration !
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -v, --version         show version
+      -c, --create-report   create report (default HTML format)
+      -f SET_FORMAT [SET_FORMAT ...], --format SET_FORMAT [SET_FORMAT ...]
+                            Available report formats: HTML(default), CSV, XML, TXT
+      -ro RUN_ONLY [RUN_ONLY ...], --run-only RUN_ONLY [RUN_ONLY ...]
+                            Run only a check: 'global_info', 'users', 'services',
+                            'integrity [local_compare]'
+      -ca, --cache          Do not start over again, get cached data
+      -ff, --flush          Delete any previous data
+      -u, --update          Update to the last version of PyAuditingTool
 
-PyAuditingTool: A tool to test GNU/Linux security and configuration !
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -v, --version         show version
-  -c, --create-report   create report (default HTML format)
-  -f SET_FORMAT [SET_FORMAT ...], --format SET_FORMAT [SET_FORMAT ...]
-                        Available report formats: HTML(default), CSV, XML, TXT
-  -ro RUN_ONLY [RUN_ONLY ...], --run-only RUN_ONLY [RUN_ONLY ...]
-                        Run only a check: 'global_info', 'users', 'services',
-                        'integrity [local_compare]'
-  -ca, --cache          Do not start over again, get cached data
-  -ff, --flush          Delete any previous data
-  -u, --update          Update to the last version of PyAuditingTool
-
-
-Mini how-to
+How to start?
 ==============
 
-1. First, run [install.sh](https://github.com/tunelko/PyAuditingTool/blob/master/install.sh) to meet dependencies. 
-2. In the first run, the tool collects some information for integrity checks, asking you to re-run it (it's normal)
+First, run [install.sh](https://github.com/tunelko/PyAuditingTool/blob/master/install.sh) to meet dependencies. 
+Then, give a try with: 
 
-Reports
+    $ ./PyAuditingTool.py -h
+
+Generating reports
 ==============
-You can create reports in several common formats: HTML, XML, CSV, TXT with --format [FORMAT] option. Reports will be stored on reports folder. HTML is the default one. 
+You can create reports in several common formats: HTML, XML, CSV, TXT with --format [FORMAT] option. Reports will be stored on reports folder. HTML is the default one. PyAuditingTool uses Jinja2 template system. 
 
 
 Wiki
