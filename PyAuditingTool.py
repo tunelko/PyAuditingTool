@@ -328,7 +328,7 @@ class PyAuditingTool(object):
 	# Delete integrity data
     def remove_data(self):
 			ask = raw_input(colored('Do you want to DELETE integrity data? [Y]/[n]: ', self.cwarning, attrs=['bold']))
-			if ask == '':
+			if ask == '' or ask == 'y' or ask == 'Y':
 				for the_file in os.listdir(self.data_path):
 					file_path = os.path.join(self.data_path, the_file)
 					try:
