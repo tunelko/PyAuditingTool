@@ -64,17 +64,17 @@ class users_module(object):
 
 								# Check for user group id 0 
 								if uid == '0' and username != 'root': 
-										print colored('[INFO] Warning! Check this username group: '+username +'('+group+')', self.cwarning,attrs=['bold'])  
+										print colored('[WARN] Check this username group: '+username +'('+group+')', self.cwarning,attrs=['bold'])  
 										users_grp0.append(username)             
 								else:
 										print colored('[INFO] Testing GROUP ID 0 for user: ' + username +'('+group+') Correct! '  , self.cok,attrs=['bold'])
 										
 								# Check for user group id 0 
 								if uid == False and gid == False:
-										print colored('[INFO] Warning! Owner and group not found for: '+username +'('+group+')', self.cwarning,attrs=['bold'])  
+										print colored('[WARN] Owner and group not found for: '+username +'('+group+')', self.cwarning,attrs=['bold'])  
 
 								
-						#last 10 cmds per user 
+						#last X cmds per user 
 						with open('tmp_cmds.txt','r') as tmp:
 								for entry in tmp:
 										history = re.sub('\n','',entry+'/.bash_history')
