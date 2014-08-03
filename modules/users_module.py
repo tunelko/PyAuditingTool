@@ -44,6 +44,7 @@ class users_module(object):
 				os.system('cat /etc/passwd > /tmp/tmp_users.txt')
 				with open('/tmp/tmp_users.txt','r') as tmp:
 						for entry in tmp:
+								print colored('-'*99, self.cok, attrs=['bold'])
 								#print entry
 								lines = entry.split(':')
 								username=lines[0]
@@ -67,7 +68,7 @@ class users_module(object):
 										print colored('[WARN] Check this username group: '+username +'('+group+')', self.cwarning,attrs=['bold'])  
 										users_grp0.append(username)             
 								else:
-										print colored('[INFO] Testing GROUP ID 0 for user: ' + username +'('+group+') Correct! '  , self.cok,attrs=['bold'])
+										print colored('[INFO] Testing group id 0 for user ' + username +'('+group+') : OK! '  , self.cok,attrs=['bold'])
 										
 								# Check for user group id 0 
 								if uid == False and gid == False:
