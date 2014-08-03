@@ -17,7 +17,9 @@ from modules.users_module import users_module
 from modules.services_module import services_module
 from modules.integrity_module import integrity_module
 from modules.platform_module import platform_module
+from modules.template_module import template_module
 from libs.config_manager import config_manager
+
 
 class PyAuditingTool(object): 
 
@@ -35,6 +37,7 @@ class PyAuditingTool(object):
 		self.min_days = 60  # 2 months password changes
 		self.last_days = 60  
 		self.max_days = 60
+		self.atdatetime = str(datetime.date(datetime.now())) + '_at_' + str(self.current_time())
 
 		self.cwarning = 'red'
 		self.cinfo = 'blue'	
@@ -53,7 +56,7 @@ class PyAuditingTool(object):
 		# be sure to be root  
 		self.check_requirements()
 		# report name  
-		self.report_name = 'tmp_report_' + str(datetime.date(datetime.now())) + '__' + str(self.current_time()) + '.txt' # raw_input(colored("Enter report name: ", self.cinfo, attrs=['bold']))
+		self.report_name = 'tmp_report_' + self.atdatetime + '.txt' 
 		# global config 
 		self.cfg = config_manager('config.cfg')
 		
@@ -177,6 +180,18 @@ class PyAuditingTool(object):
 		print colored('='*99, self.cinfo,attrs='') 
 		return ''
 
+    def global_info(self):
+			global_info = platform_module('global_info')
+			self.separator()
+			print colored('[TASK] '+ self.current_time() + ' Global system info',self.cinfo, attrs=['bold'])
+			self.separator()
+			print colored(global_info.get_platform(), self.cinfo) 
+			print colored(global_info.get_dist(), self.cinfo)
+			print colored(global_info.get_arquitecture(), self.cinfo)
+			self.separator()	
+			#self.save_html('mytemplate.html', data='report data here')			
+
+
     def check_users(self):
     	# config & class loading
 		users = users_module('users')
@@ -185,7 +200,7 @@ class PyAuditingTool(object):
 
 		print users.separator()
 		print colored('[TASK] '+ self.current_time() + ' Enumerating users with login access & group id 0',self.cinfo, attrs=['bold'])
-		print users.get_enum_usergroups(number_of_commands_per_user)				
+		print users.get_enum_usergroups(number_of_commands_per_user)						
 		print users.separator()		
 		print colored('[TASK] '+ self.current_time() + ' Enumerating system users and password policy ',self.cinfo, attrs=['bold'])
 		print users.get_policy_usergroups()		
@@ -230,17 +245,6 @@ class PyAuditingTool(object):
 
 
 		return ''
-
-
-    def global_info(self):
-			global_info = platform_module('global_info')
-			self.separator()
-			print colored('[TASK] '+ self.current_time() + ' Global system info',self.cinfo, attrs=['bold'])
-			self.separator()
-			print colored(global_info.get_platform(), self.cinfo) 
-			print colored(global_info.get_dist(), self.cinfo)
-			print colored(global_info.get_arquitecture(), self.cinfo)
-			self.separator()	
 
 
 		# Check integrity against first comparation running (on each path)
@@ -305,7 +309,8 @@ class PyAuditingTool(object):
 				self.separator()	
 				print colored('[CMD] Executing:' + cmd , self.cok, attrs=['dark']) 
 				os.system(cmd)
-				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + compare_md5_file, delimiter='  ')				
+				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + compare_md5_file, delimiter='  ')	
+
 
 			return ''			
 
@@ -321,7 +326,7 @@ class PyAuditingTool(object):
 
 	# Delete integrity data
     def remove_data(self):
-			ask = raw_input(colored('Do you want to DELETE data? [Y]/[n]: ', self.cwarning, attrs=['bold']))
+			ask = raw_input(colored('Do you want to DELETE integrity data? [Y]/[n]: ', self.cwarning, attrs=['bold']))
 			if ask == '':
 				for the_file in os.listdir(self.data_path):
 					file_path = os.path.join(self.data_path, the_file)
@@ -335,6 +340,13 @@ class PyAuditingTool(object):
 				print colored('Bye ... !\n',self.calert, attrs=['dark'])
 				exit(0)						
 
+    def save_html(self, template_file, data):
+		#HTML5 templating Jinja2 system 
+		template = template_module('template')
+		output = template.print_html_doc(template_file, data)
+		# to save the results
+		with open(self.reports_path + 'report_'+self.atdatetime+'.html', 'wb') as f:
+			f.write(output)
 		
 
 # Init object and start. 

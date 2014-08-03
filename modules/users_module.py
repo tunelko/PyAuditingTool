@@ -50,7 +50,6 @@ class users_module(object):
 								username=lines[0]
 								uid = lines[3]
 								gid = lines[4]
-								#print 'Effective User ID is', pwd.getpwuid(int(uid))[0]
 								shell = re.sub('\n','',lines[6])
 								group = grp.getgrgid(uid)[0]
 								os.system('grep -e "^'+username+'" /etc/passwd | awk -F: {\'print $6\'}>>tmp_cmds.txt')
