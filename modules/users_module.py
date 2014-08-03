@@ -12,7 +12,7 @@ from termcolor import colored, cprint
 import commands
 
 class users_module(object):
-		''' Class that handles any user-controlled settings '''
+		''' Class that handles any user-controlled settings ''' 
 
 		def __init__(self, cfg_file='config.cfg'):
 				self.current_time = lambda: str(datetime.now()).split(' ')[1].split('.')[0]
