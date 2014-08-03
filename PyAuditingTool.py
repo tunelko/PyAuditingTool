@@ -192,7 +192,7 @@ class PyAuditingTool(object):
 			self.separator()	
 			#self.save_html('mytemplate.html', data='report data here')			
 
-
+ 
     def check_users(self):
     	# config & class loading
 		users = users_module('users')
