@@ -69,6 +69,8 @@ class config_manager(object):
     def get_sysctl_variables2check(self):
             return self.config.get("Services", 'sysctl_variables2check')
     
+    def get_number_of_commands_per_user(self):
+            return self.config.get("System", 'number_of_commands_per_user')
 
             
 

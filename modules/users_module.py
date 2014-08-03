@@ -37,7 +37,7 @@ class users_module(object):
 				print colored('='*99, self.cinfo,attrs='') 
 				return ''
 		# Call user/groups enum, several users checks  
-		def get_enum_usergroups(self):
+		def get_enum_usergroups(self, number_of_commands_per_user='20'):
 				users_login_access=[]
 				users_grp0=[]
 
@@ -80,9 +80,9 @@ class users_module(object):
 										history = re.sub('\n','',entry+'/.bash_history')
 										if os.path.isfile(history): 
 												print self.separator()
-												print colored('[INFO] Last commands for user '+entry, self.cinfo,attrs=['bold'])
+												print colored('[INFO] Last '+number_of_commands_per_user+' commands for user '+entry, self.cinfo,attrs=['bold'])
 												print self.separator()
-												os.system('head -n20 '+history+'|cat -n')
+												os.system('head -n'+number_of_commands_per_user+' '+history+'|cat -n')
 
 						# print 'resume:' , users_login_access
 						os.remove('tmp_cmds.txt')

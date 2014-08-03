@@ -181,10 +181,11 @@ class PyAuditingTool(object):
     	# config & class loading
 		users = users_module('users')
 		sudoers = self.cfg.get_sudoers_path()
+		number_of_commands_per_user = self.cfg.get_number_of_commands_per_user()
 
 		print users.separator()
 		print colored('[TASK] '+ self.current_time() + ' Enumerating users with login access & group id 0',self.cinfo, attrs=['bold'])
-		print users.get_enum_usergroups()				
+		print users.get_enum_usergroups(number_of_commands_per_user)				
 		print users.separator()		
 		print colored('[TASK] '+ self.current_time() + ' Enumerating system users and password policy ',self.cinfo, attrs=['bold'])
 		print users.get_policy_usergroups()		
