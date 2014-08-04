@@ -57,10 +57,10 @@ class services_module(object):
 			variables_nok=[]
 
 			with open(filepath, 'r') as f:
-				for line in f:
-					pairs =  line.split(delimiter)
+				for line in f:					
+					pairs = filter(lambda x:x != '', line.split(delimiter))					
 					if len(pairs)==2:
-						key = pairs[0]
+						key = re.sub('\n','',pairs[0])
 						value = re.sub('\n','',pairs[1])
 						variables.append(key+' ' +value)
 
@@ -73,6 +73,7 @@ class services_module(object):
 						variables_nok.append(val)
 
 			resulting_list = list(set(variables_nok) - set(variables_ok))
+			# print resulting_list
 
 			for val in resulting_list:				
 				if val.startswith("#"):					
