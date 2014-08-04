@@ -312,7 +312,7 @@ class PyAuditingTool(object):
 
 		# Update via Github
     def get_updates(self): 
-			return ""os.system('git pull')
+			return os.system('git pull')
 
 	# Save data for reports 
     def save_data(self, report, data):
