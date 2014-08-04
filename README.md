@@ -1,6 +1,6 @@
 PyAuditingTool
 ==============
-PyAuditingTool: A tool to test GNU/Linux security and its misconfiguration
+PyAuditingTool: A tool to test GNU/Linux security and its misconfiguration. The tests are part of common security guidelines and standards and recommendations are include in the reports. 
 
 For now, it checks: 
 
