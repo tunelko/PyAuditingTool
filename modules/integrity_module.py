@@ -37,7 +37,7 @@ class integrity_module(object):
 		# Dummy separator 
 		def separator(self,attrs=''): 
 				print colored('='*99, self.cinfo,attrs='') 
-				return 
+				return ''
 
 	# get md5sum -b of any path as param (only files -d)
 		def get_md5sum(self,path=''): 
@@ -51,7 +51,7 @@ class integrity_module(object):
 
 			print colored('[CMD] Executing: for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum '+path+'/$file; done > ' + tmpf, self.cok, attrs=['dark']) 
 			os.system('for file in `find '+path+'/ -maxdepth 1 -type f -printf "%f\n"`; do md5sum '+path+'/$file; done > ' + tmpf )
-			return 
+			return ''
 
 		# os.system('cat tmp_md5' + re.sub('/','_',path) + '.txt')
 
@@ -114,7 +114,7 @@ class integrity_module(object):
 
 			except IOError:
 				print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
-			return 
+			return ''
 
 		# Save data for reports 
 		def save_data(self, report, data):

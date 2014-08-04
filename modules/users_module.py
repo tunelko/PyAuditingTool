@@ -36,7 +36,7 @@ class users_module(object):
 		# Dummy separator 
 		def separator(self,attrs=''): 
 				print colored('='*99, self.cinfo,attrs='') 
-				return 
+				return ''
 
 
 		# Call user/groups enum, several users checks  
@@ -91,7 +91,7 @@ class users_module(object):
 
 						# print 'resume:' , users_login_access
 						os.remove('tmp_cmds.txt')
-						return 
+						return ''
 
 		# Password policiy checks 
 		def get_policy_usergroups(self):
@@ -116,7 +116,7 @@ class users_module(object):
 
 				except:
 						print "There was a problem running the script."
-						return        
+						return ''       
 
 		# Check Sudoers config (via config values)
 		def get_sudoers(self, file):    
@@ -129,4 +129,4 @@ class users_module(object):
 
 				except IOError:
 						print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
-				return 
+				return ''
