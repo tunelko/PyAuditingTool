@@ -31,7 +31,7 @@ class PyAuditingTool(object):
 ██╔═══╝   ╚██╔╝  ██╔══██║██║   ██║██║  ██║██║   ██║   ██║██║╚██╗██║██║   ██║  ██║   ██║   ██║██║   ██║██║     
 ██║        ██║   ██║  ██║╚██████╔╝██████╔╝██║   ██║   ██║██║ ╚████║╚██████╔╝  ██║   ╚██████╔╝╚██████╔╝███████╗
 ╚═╝        ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝
-[*] by @tunelko                                                                                                                     
+[*] A tool to test GNU/Linux security and (mis)configuration ! 
         '''
 		self.current_time = lambda: str(datetime.now()).split(' ')[1].split('.')[0]
 		self.min_days = 60  # 2 months password changes
