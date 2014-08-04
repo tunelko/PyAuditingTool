@@ -34,7 +34,7 @@ class services_module(object):
 	# Dummy separator 
 	def separator(self,attrs=''): 
 		print colored('='*99, self.cinfo,attrs='') 
-		return ''
+		return 
 
 	# Check heartbleed vulnerability. version checking only. 
 	def check_heartbleed(self):
@@ -80,5 +80,5 @@ class services_module(object):
 
 		except IOError, e:
 				print colored('[ERROR] filepath not found, check config value: ssh2_path = ' + filepath, self.cwarning,attrs=['bold'] )
-				return ''
+				return 
 		

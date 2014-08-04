@@ -179,7 +179,7 @@ class PyAuditingTool(object):
 	# Dummy separator 
     def separator(self,attrs=''): 
 		print colored('='*99, self.cinfo,attrs='') 
-		return ''
+		return 
 
     def global_info(self):
 			global_info = platform_module('global_info')
@@ -243,9 +243,7 @@ class PyAuditingTool(object):
 		self.separator()
 		services.check_services(sysctl_path, params,delimiter=' = ')
 		self.separator()
-
-
-		return ''
+		return 
 
 
 		# Check integrity against first comparation running (on each path)
@@ -274,8 +272,7 @@ class PyAuditingTool(object):
 				print colored('[TASK] '+ self.current_time() + ' Verifying integrity on ' + path, self.cinfo, attrs=['bold'])	
 				self.separator()					
 				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + 'tmp_md5_compare'+tmppart+'.txt', delimiter='  ')
-
-			return ''
+			return 
 
 
 			# Check integrity on system md5sums path 
@@ -310,10 +307,8 @@ class PyAuditingTool(object):
 				self.separator()	
 				print colored('[CMD] Executing:' + cmd , self.cok, attrs=['dark']) 
 				os.system(cmd)
-				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + compare_md5_file, delimiter='  ')	
-
-
-			return ''			
+				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + compare_md5_file, delimiter='  ')
+			return 			
 
 		# Update via Github
     def get_updates(self): 
