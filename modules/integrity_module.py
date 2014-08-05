@@ -6,7 +6,7 @@ Created on June 30, 2014
 '''
 
 import os, re 
-import spwd, pwd, grp 
+import spwd, pwd, grp , time
 from datetime import datetime
 from termcolor import colored, cprint 
 import commands
@@ -110,11 +110,26 @@ class integrity_module(object):
 				with open('tmp_stat.txt', 'r') as f:
 					for line in f:
 						line = re.sub('\n','',line)
+						files = line.split(' ')
+						file = files[6]
+
 						print colored(line,self.cinfo,attrs=['bold'])
+						(mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(file)
+						#print mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime
+						print colored("Last modified: %s" % time.ctime(mtime), self.cinfo, attrs=['blink'])
+						print colored("Mode: %s" % mode, self.cinfo, attrs=['blink'])
+						print colored("Ino: %s" % ino, self.cinfo, attrs=['blink'])
+						print colored("Dev: %s" % dev, self.cinfo, attrs=['blink'])
+						print colored("Nlink: %s" % nlink, self.cinfo, attrs=['blink'])
+						print colored("Size: %s" % size, self.cinfo, attrs=['blink'])
+						print colored('-'*99, 'white', attrs=['blink'])
+
+
 
 			except IOError:
 				print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
 			return ''
+
 
 		# Save data for reports 
 		def save_data(self, report, data):

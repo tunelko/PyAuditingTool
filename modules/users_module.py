@@ -130,3 +130,4 @@ class users_module(object):
 				except IOError:
 						print colored('[ERROR] File not found, check config value: sudoers_path=' + file, self.cwarning,attrs=['bold'] )
 				return ''
+
