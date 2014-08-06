@@ -148,7 +148,7 @@ class PyAuditingTool(object):
 			# Specify only to run a check
 			if args.run_only is not None:
 			    run_only(args.run_only)
-s			    
+			    
 			# Get updates from URL 
 			if args.get_updates:
 			    self.get_updates()
