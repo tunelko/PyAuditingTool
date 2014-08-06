@@ -167,7 +167,7 @@ class PyAuditingTool(object):
 		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")		    
 		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: 'info', 'users', 'services', 'integrity [local_compare]'")
 		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
-		    parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
+		    #parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
 		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
 		    main(parser.parse_args())
 
@@ -250,10 +250,13 @@ class PyAuditingTool(object):
     def check_integrity(self):
 			# call module 
 			integrity = integrity_module('integrity')
+			
 			# task: integrity of binaries defined in config 
 			integrity_paths = self.cfg.get_integrity_paths().split(':')
+
 			# task: check stat of files (sid,gid,owner,groupowner) defined in config.cfg  
 			stat_paths = self.cfg.get_stat_paths().split(':')
+			
 			for path in stat_paths: 	
 				self.separator()
 				print colored('[TASK] '+ self.current_time() + ' Checking stat (sid,gid,owner,groupowner) ' + path ,self.cdefault, attrs=['bold'])
@@ -272,7 +275,9 @@ class PyAuditingTool(object):
 				print colored('[TASK] '+ self.current_time() + ' Verifying integrity on ' + path, self.cinfo, attrs=['bold'])	
 				self.separator()					
 				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + 'tmp_md5_compare'+tmppart+'.txt', delimiter='  ')
-			return ""
+
+			#self.remove_data(force=True)
+			return ''
 
 
 			# Check integrity on system md5sums path 
@@ -308,7 +313,8 @@ class PyAuditingTool(object):
 				print colored('[CMD] Executing:' + cmd , self.cok, attrs=['dark']) 
 				os.system(cmd)
 				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + compare_md5_file, delimiter='  ')
-			return ""			
+			
+			return ''			
 
 		# Update via Github
     def get_updates(self): 
@@ -320,18 +326,24 @@ class PyAuditingTool(object):
 			f.write(data+'\n')
 			f.close 
 
+    def delete_walk(self, path): 
+		for files in os.listdir(path):
+			file_path = os.path.join(path, files)
+		try:
+			if os.path.isfile(file_path):
+			    os.unlink(file_path)
+			    print colored('[INFO] removed ' + file_path + '',self.cinfo,attrs=['bold']) 
+		except Exception, e:
+			print e
+
 	# Delete integrity data
-    def remove_data(self):
-			ask = raw_input(colored('Integrity data (data/*) will be lost, Do you want to delete? [Y]/[n]: ', self.cwarning, attrs=['bold']))
+    def remove_data(self, force=False):
+		if force == True:
+			self.delete_walk(self.data_path)
+		else:
+			ask = raw_input(colored('Integrity data (data/tmp*) will be lost, Do you want to delete? [Y]/[n]: ', self.cwarning, attrs=['bold']))
 			if ask == '' or ask == 'y' or ask == 'Y':
-				for the_file in os.listdir(self.data_path):
-					file_path = os.path.join(self.data_path, the_file)
-					try:
-						if os.path.isfile(file_path):
-						    os.unlink(file_path)
-						    print colored('[INFO] removed ' + file_path + '',self.cinfo,attrs=['bold']) 
-					except Exception, e:
-						print e
+				self.delete_walk(self.data_path)
 			else:
 				print colored('Bye ... !\n',self.calert, attrs=['dark'])
 				exit(0)						
