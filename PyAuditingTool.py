@@ -70,7 +70,7 @@ class PyAuditingTool(object):
 			elif format[0] == 'TXT':
 				print format[0]
 			else:
-				print colored("Unknown format, need a valid format --h for help\n", self.cwarning,  attrs=['bold'])
+				print colored("Unknown option, need a valid format? --h for help\n", self.cwarning,  attrs=['bold'])
 				exit(0)
 
 		# Call to run a check 
@@ -229,6 +229,15 @@ class PyAuditingTool(object):
 		self.separator()
 		services.check_services(apache2_path, params)
 		self.separator()
+
+		# PHP5 confguration 
+		php5_path = self.cfg.get_php5_path()
+		params = self.cfg.get_php5_variables2check().split(':')
+		self.separator()
+		print colored('[TASK] '+ self.current_time() + ' Checking PHP5 configuration '+ php5_path ,self.cinfo, attrs=['bold'])
+		self.separator()
+		services.check_services(php5_path, params,delimiter=' = ')
+		self.separator()		
 
 		# Sysclt confguration 
 		sysctl_path = self.cfg.get_sysctl_path()

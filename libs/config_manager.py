@@ -60,6 +60,12 @@ class config_manager(object):
     def get_apache2_variables2check(self):
             return self.config.get("Services", 'apache2_variables2check')
 
+    def get_php5_path(self):
+            return self.config.get("Services", 'php5_path')
+
+    def get_php5_variables2check(self):
+            return self.config.get("Services", 'php5_variables2check')
+
     def get_sudoers_path(self):
             return self.config.get("System", 'sudoers_path')
 

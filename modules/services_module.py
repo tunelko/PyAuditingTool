@@ -62,22 +62,30 @@ class services_module(object):
 					if len(pairs)==2:
 						key = re.sub('\n','',pairs[0])
 						value = re.sub('\n','',pairs[1])
-						variables.append(key+' ' +value)
+						variables.append(key + ' ' + value)
+
 
 			for valc in params:       
 				for val in variables:
 					if val in valc:
 						print colored('[INFO] Value OK: ' + val,self.cok,attrs=['bold'])
 						variables_ok.append(val)
-					else:               
+					else:						
 						variables_nok.append(val)
 
-			resulting_list = list(set(variables_nok) - set(variables_ok))
-			# print resulting_list
+			resulting_list = list(set(variables_nok) - set(variables_ok))			
+			#print resulting_list
 
 			for val in resulting_list:				
 				if val.startswith("#"):					
 					print colored('[WARN] Value is commented and not processed by the filters: ' + val,self.cwarning,attrs=['bold'])
+				if delimiter ==' = ':
+					if val.startswith(";"):
+						print colored('[WARN] Value is commented and not processed by the filters: ' + val,self.cwarning,attrs=['bold'])
+						continue
+					else:
+						#print colored('[WARN] Please, Check this value NOT in the filters: ' + val,self.cinfo,attrs=['bold'])
+						continue
 
 		except IOError, e:
 				print colored('[ERROR] filepath not found, check config value: ssh2_path = ' + filepath, self.cwarning,attrs=['bold'] )
