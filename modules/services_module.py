@@ -88,6 +88,6 @@ class services_module(object):
 						continue
 
 		except IOError, e:
-				print colored('[ERROR] filepath not found, check config value: ssh2_path = ' + filepath, self.cwarning,attrs=['bold'] )
+				print colored('[ERROR] filepath not found, check config value [service_path] = ' + filepath, self.cwarning,attrs=['bold'] )
 				return ''
 		
