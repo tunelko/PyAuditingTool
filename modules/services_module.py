@@ -50,7 +50,7 @@ class services_module(object):
 
 
 	# Check any service with delimiter (via config values)
-	def check_services(self, filepath, params = [], delimiter=' '):
+	def check_services(self, filepath, params = [], delimiter=' ',service=False):
 		try:
 			variables=[]       
 			variables_ok=[]
@@ -67,24 +67,29 @@ class services_module(object):
 
 			for valc in params:       
 				for val in variables:
+					
 					if val in valc:
 						print colored('[INFO] Value OK: ' + val,self.cok,attrs=['bold'])
 						variables_ok.append(val)
-					else:						
+					elif not val in valc:						
 						variables_nok.append(val)
 
+			
 			resulting_list = list(set(variables_nok) - set(variables_ok))			
+
 			#print resulting_list
+
 
 			for val in resulting_list:				
 				if val.startswith("#"):					
 					print colored('[WARN] Value is commented and not processed by the filters: ' + val,self.cwarning,attrs=['bold'])
-				if delimiter ==' = ':
-					if val.startswith(";"):
-						print colored('[WARN] Value is commented and not processed by the filters: ' + val,self.cwarning,attrs=['bold'])
+
+				if service =='PHP5':
+					if val.startswith(";"):						
+						#print colored('[WARN] Value is commented and not processed by the filters: ' + val,self.cwarning,attrs=['bold'])
 						continue
 					else:
-						#print colored('[WARN] Please, Check this value NOT in the filters: ' + val,self.cinfo,attrs=['bold'])
+						print colored('[WARN] Please, Check this value: ' + val,self.calert,attrs=['dark'])
 						continue
 
 		except IOError, e:

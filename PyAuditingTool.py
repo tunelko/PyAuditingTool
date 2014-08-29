@@ -232,11 +232,10 @@ class PyAuditingTool(object):
 
 		# PHP5 confguration 
 		php5_path = self.cfg.get_php5_path()
-		params = self.cfg.get_php5_variables2check().split(':')
-		self.separator()
+		params = self.cfg.get_php5_variables2check().split(':')		
 		print colored('[TASK] '+ self.current_time() + ' Checking PHP5 configuration '+ php5_path ,self.cinfo, attrs=['bold'])
 		self.separator()
-		services.check_services(php5_path, params,delimiter=' = ')
+		services.check_services(php5_path, params,delimiter=' = ',service='PHP5')
 		self.separator()		
 
 		# Sysclt confguration 
