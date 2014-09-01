@@ -12,7 +12,8 @@ For now, it checks:
 - Check users in /etc/sudoers 
 - Check SSH configuration (several config parameters)
 - Check OpenSSL version for heartbleed vulnerability
-- Check Apache2 configuration (several config parameters)
+- Check Apache2 configuration (minimal config parameters)
+- Check PHP5 configuration (minimal config parameters)
 - Check sysctl.conf (several config parameters)
 - Check Integrity (md5sums) on binary files defined via config.cfg with two modes:
     - Via local compare
