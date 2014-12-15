@@ -150,7 +150,8 @@ class PyAuditingTool(object):
 			    self.get_updates()
 			    exit(0)
 
-	
+
+
 	# Check requirements before run 
     def check_requirements(self):
     	if os.geteuid() != 0:
@@ -343,8 +344,9 @@ class PyAuditingTool(object):
 		# to save the results
 		with open(self.reports_path + 'report_'+self.atdatetime+'.html', 'wb') as f:
 			f.write(output)
-		
-	### Main
+	
+
+		### Main
 		if __name__ == '__main__':
 		    parser = argparse.ArgumentParser(description='PyAuditingTool: A tool to test GNU/Linux security and configuration !')
 		    parser.add_argument("-v", "--version", action='version', help="show version", version=__version__ +' by ' + __author__)
