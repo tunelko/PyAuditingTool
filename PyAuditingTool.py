@@ -1,10 +1,5 @@
-
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
-""" PyAuditingTool.py:
-    Class to check linux server's security and its misconfiguration
-"""
 
 __author__ = "@tunelko"
 __version__ = 'PyAuditingTool v0.2'
