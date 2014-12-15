@@ -150,7 +150,17 @@ class PyAuditingTool(object):
 			    self.get_updates()
 			    exit(0)
 
-
+		### Main
+		if __name__ == '__main__':
+		    parser = argparse.ArgumentParser(description='PyAuditingTool: A tool to test GNU/Linux security and configuration !')
+		    parser.add_argument("-v", "--version", action='version', help="show version", version=__version__ +' by ' + __author__)
+		    parser.add_argument("-c", "--create-report", action='store_true', dest='create_report', help="create report (default HTML format)")
+		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")		    
+		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: 'info', 'users', 'services', 'integrity [local_compare]'")
+		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
+		    #parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
+		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
+		    main(parser.parse_args())
 
 	# Check requirements before run 
     def check_requirements(self):
@@ -344,20 +354,8 @@ class PyAuditingTool(object):
 		# to save the results
 		with open(self.reports_path + 'report_'+self.atdatetime+'.html', 'wb') as f:
 			f.write(output)
-	
+		
 
-		### Main
-		if __name__ == '__main__':
-		    parser = argparse.ArgumentParser(description='PyAuditingTool: A tool to test GNU/Linux security and configuration !')
-		    parser.add_argument("-v", "--version", action='version', help="show version", version=__version__ +' by ' + __author__)
-		    parser.add_argument("-c", "--create-report", action='store_true', dest='create_report', help="create report (default HTML format)")
-		    parser.add_argument("-f", "--format", nargs='+',dest='set_format', help="Available report formats: HTML(default), CSV, XML, TXT")		    
-		    parser.add_argument("-ro", "--run-only", nargs='+',dest='run_only', help="Run only a check: 'info', 'users', 'services', 'integrity [local_compare]'")
-		    parser.add_argument("-ca", "--cache",action='store_true', help="Do not start over again, get cached data")
-		    #parser.add_argument("-ff", "--flush",action='store_true',dest='remove_data', help="Delete any previous data")
-		    parser.add_argument("-u", "--update", action='store_true', dest='get_updates', help="Update to the last version of PyAuditingTool")
-		    main(parser.parse_args())
-		    
 # Init object and start. 
 obj = PyAuditingTool()
 start = timeit.default_timer()
