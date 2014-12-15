@@ -181,7 +181,7 @@ class PyAuditingTool(object):
 			print colored(global_info.get_dist(), self.cinfo)
 			print colored(global_info.get_arquitecture(), self.cinfo)
 			self.separator()	
-			#self.save_html('mytemplate.html', data='report data here')			
+			self.save_html('mytemplate.html', data='report data here')			
 
  
     def check_users(self):
