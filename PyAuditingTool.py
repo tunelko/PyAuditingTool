@@ -25,7 +25,15 @@ from libs.config_manager import config_manager
 class PyAuditingTool(object): 
 
     def __init__(self):
-		self.banner = '[*] A tool to test GNU/Linux security and (mis)configuration !'
+		self.banner = '''
+██████╗ ██╗   ██╗ █████╗ ██╗   ██╗██████╗ ██╗████████╗██╗███╗   ██╗ ██████╗████████╗ ██████╗  ██████╗ ██╗     
+██╔══██╗╚██╗ ██╔╝██╔══██╗██║   ██║██╔══██╗██║╚══██╔══╝██║████╗  ██║██╔════╝╚══██╔══╝██╔═══██╗██╔═══██╗██║     
+██████╔╝ ╚████╔╝ ███████║██║   ██║██║  ██║██║   ██║   ██║██╔██╗ ██║██║  ███╗  ██║   ██║   ██║██║   ██║██║     
+██╔═══╝   ╚██╔╝  ██╔══██║██║   ██║██║  ██║██║   ██║   ██║██║╚██╗██║██║   ██║  ██║   ██║   ██║██║   ██║██║     
+██║        ██║   ██║  ██║╚██████╔╝██████╔╝██║   ██║   ██║██║ ╚████║╚██████╔╝  ██║   ╚██████╔╝╚██████╔╝███████╗
+╚═╝        ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝
+[*] A tool to test GNU/Linux security and (mis)configuration ! 
+        '''
 		self.current_time = lambda: str(datetime.now()).split(' ')[1].split('.')[0]
 		self.min_days = 60  # 2 months password changes
 		self.last_days = 60  
