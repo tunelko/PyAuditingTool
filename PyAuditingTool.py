@@ -3,6 +3,7 @@
 
 __author__ = "@tunelko"
 __version__ = 'PyAuditingTool v0.2'
+__date__ = '30/06/2014'
 
 import os, re 
 from datetime import datetime
