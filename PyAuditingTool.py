@@ -8,6 +8,7 @@ from datetime import datetime
 from termcolor import colored
 import argparse
 import timeit
+import webserver_reports
 from modules.users_module import users_module
 from modules.services_module import services_module
 from modules.integrity_module import integrity_module
@@ -19,7 +20,7 @@ from libs.config_manager import config_manager
 class PyAuditingTool(object): 
 
     def __init__(self):
-		self.banner = ' [*] A tool to test GNU/Linux security and (mis)configuration ! '
+		self.banner = '''[*] A tool to test GNU/Linux security and (mis)configurations'''
 		self.current_time = lambda: str(datetime.now()).split(' ')[1].split('.')[0]
 		self.min_days = 60  # 2 months password changes
 		self.last_days = 60  
@@ -72,6 +73,7 @@ class PyAuditingTool(object):
 				total_time = stop - start				
 				print colored('[INFO] '+ self.current_time() + ' (' + option[0] +') running checks take ' +  str(total_time) + ' seconds to complete ', self.cinfo, attrs=['bold'])					
 				self.separator()
+
 				exit(0)
 
 			elif option[0] == 'users':
@@ -124,10 +126,6 @@ class PyAuditingTool(object):
 		# Parse arguments and call actions
 		def main(args):
 			''' Call functions in the correct order based on CLI params '''
-			# Create report 
-			if args.create_report:
-			    create_report()
-
 			# Specify report's format
 			if args.set_format is not None:
 			    set_format(args.set_format)
@@ -171,8 +169,7 @@ class PyAuditingTool(object):
 			print colored(global_info.get_platform(), self.cinfo) 
 			print colored(global_info.get_dist(), self.cinfo)
 			print colored(global_info.get_arquitecture(), self.cinfo)
-			self.separator()	
-			self.save_html('mytemplate.html', data='report data here')			
+			self.separator()				
 
  
     def check_users(self):
@@ -191,6 +188,7 @@ class PyAuditingTool(object):
 		print users.separator()
 		print users.get_sudoers(sudoers)
 		print colored('[INFO] '+ self.current_time() + ' Please, check if the users above are right for ' + sudoers ,self.cwarning, attrs=['bold'])
+		self.start_server()
 		return''
 
 
@@ -206,7 +204,6 @@ class PyAuditingTool(object):
 		self.separator()
 		services.check_heartbleed()		
 		services.check_services(sshd_path, params)
-
 
 		# Apache2 confguration 
 		apache2_path = self.cfg.get_apache2_path()
@@ -233,6 +230,7 @@ class PyAuditingTool(object):
 		self.separator()
 		services.check_services(sysctl_path, params,delimiter=' = ')
 		self.separator()
+		self.start_server()
 		return ""
 
 
@@ -267,6 +265,7 @@ class PyAuditingTool(object):
 				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + 'tmp_md5_compare'+tmppart+'.txt', delimiter='  ')
 
 			#self.remove_data(force=True)
+			self.start_server()
 			return ''
 
 
@@ -303,18 +302,12 @@ class PyAuditingTool(object):
 				print colored('[CMD] Executing:' + cmd , self.cok, attrs=['dark']) 
 				os.system(cmd)
 				integrity.compare_checksums(self.data_path + 'tmp_md5'+tmppart+'.txt', self.data_path + compare_md5_file, delimiter='  ')
-			
+			self.start_server()
 			return ''			
 
 		# Update via Github
     def get_updates(self): 
 			return os.system('git pull')
-
-	# Save data for reports 
-    def save_data(self, report, data):
-		with open(report, 'a') as f:
-			f.write(data+'\n')
-			f.close 
 
     def delete_walk(self, path): 
 		for files in os.listdir(path):
@@ -338,16 +331,16 @@ class PyAuditingTool(object):
 				print colored('Bye ... !\n',self.calert, attrs=['dark'])
 				exit(0)						
 
-    def save_html(self, template_file, data):
-		#HTML5 templating Jinja2 system 
-		template = template_module('template')
-		output = template.print_html_doc(template_file, data)
-		# to save the results
-		with open(self.reports_path + 'report_'+self.atdatetime+'.html', 'wb') as f:
-			f.write(output)
-		
+    def start_server(self):	    
+		self.separator()	
+		print colored('[INFO] '+ self.current_time() + ' Your report is on http://localhost:8888', self.cdefault, attrs=['bold'])
+		self.separator()	
+		print colored('[STOP] '+ self.current_time() + ' CTRL+C to stop server', self.cinfo, attrs=['bold'])
+		webserver_reports.start_server()
 
-# Init object and start. 
+
+
+# Init object
 obj = PyAuditingTool()
 start = timeit.default_timer()
 print colored(obj.banner, obj.cok) 
@@ -368,4 +361,4 @@ obj.separator()
 stop = timeit.default_timer()
 total_time = stop - start
 print colored('[INFO] '+ obj.current_time() + ' All running checks take ' +  str(total_time) + ' seconds to complete ', obj.cinfo, attrs=['bold'])	
-obj.separator()	
+obj.start_server()
