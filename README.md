@@ -35,7 +35,6 @@ Usage
     optional arguments:
       -h, --help            show this help message and exit
       -v, --version         show version
-      -c, --create-report   create report (default HTML format)
       -f SET_FORMAT [SET_FORMAT ...], --format SET_FORMAT [SET_FORMAT ...]
                             Available report formats: HTML(default), CSV, XML, TXT
       -ro RUN_ONLY [RUN_ONLY ...], --run-only RUN_ONLY [RUN_ONLY ...]
@@ -54,14 +53,14 @@ Then, give a try with:
 
     $ ./PyAuditingTool.py -h
 
-Generating reports
+Reports
 ==============
-You can create reports in several common formats: HTML, XML, CSV, TXT with --format [FORMAT] option. Reports will be stored on reports folder. HTML is the default one. PyAuditingTool uses Jinja2 template system. 
-
+You can access to a complete report once tasks are finished. It uses tornado webserver and its templating ui to render all the data. If you want to export data, there are several formats availables. All in a fancy way with bootstrap css elements. 
 
 Wiki
 ==============
 
 Please visit wiki section form more detailed information: 
 https://github.com/tunelko/PyAuditingTool/wiki
+
 
