@@ -18,4 +18,4 @@
 pip install argparse
 pip install termcolor
 pip install datetime
-pip install jinja2
+pip install tornado --upgrade 
