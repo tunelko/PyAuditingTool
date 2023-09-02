@@ -1,3 +1,6 @@
+This project was creted in 2012 and was migrate into pieces across the universe. 
+Archived now
+
 PyAuditingTool
 ==============
 PyAuditingTool: A opensource tool to test GNU/Linux security and misconfiguration. The main goal is scan, review and audit to make recommendations and fix the problems hardening the system. The tests are part of common security guidelines and standards. All is include in common format's reports. 
